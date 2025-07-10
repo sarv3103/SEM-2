@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MSG91 Widget Test - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .test-container {
+            max-width: 600px;
+            margin: 2em auto;
+            padding: 2em;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .widget-section {
+            margin: 2em 0;
+            padding: 1.5em;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #0077cc;
+        }
+        .config-info {
+            background: #e3f2fd;
+            padding: 1em;
+            border-radius: 5px;
+            margin: 1em 0;
+        }
+        .status {
+            padding: 1em;
+            border-radius: 5px;
+            margin: 1em 0;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 MSG91 OTP Widget Test</h1>
+        
+        <div class="config-info">
+            <h3>📋 Your Widget Configuration</h3>
+            <ul>
+                <li><strong>Widget Name:</strong> TravelPlannerOTP</li>
+                <li><strong>Auth Key:</strong> 457111ARwKRzZTS26856eb4aP1</li>
+                <li><strong>OTP Length:</strong> 6 digits</li>
+                <li><strong>Expiration:</strong> 15 minutes</li>
+                <li><strong>Test Mobile:</strong> 9130123270</li>
+            </ul>
+        </div>
+
+        <div class="widget-section">
+            <h3>📱 MSG91 OTP Widget Integration</h3>
+            <p>This section will contain the MSG91 widget once you get the integration code.</p>
+            
+            <!-- Placeholder for MSG91 Widget -->
+            <div id="msg91-widget-placeholder" style="border: 2px dashed #0077cc; padding: 2em; text-align: center; border-radius: 8px;">
+                <h4>🔧 MSG91 Widget Will Appear Here</h4>
+                <p>After you get your Widget ID from MSG91 dashboard, the OTP widget will be integrated here.</p>
+                <p><strong>Expected Widget ID format:</strong> Something like "widget_123456"</p>
+            </div>
+
+            <!-- Integration Code Template -->
+            <div style="background: #f8f9fa; padding: 1em; border-radius: 5px; margin: 1em 0; font-family: monospace; font-size: 0.9em;">
+                <h4>📝 Integration Code Template:</h4>
+                <pre>
+&lt;!-- MSG91 OTP Widget Integration --&gt;
+&lt;script src="https://widget.msg91.com/js/widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  var msg91Widget = new Msg91Widget({
+    widgetId: "YOUR_WIDGET_ID_HERE",
+    templateId: "YOUR_TEMPLATE_ID_HERE", 
+    authKey: "457111ARwKRzZTS26856eb4aP1"
+  });
+&lt;/script&gt;
+                </pre>
+            </div>
+        </div>
+
+        <div class="widget-section">
+            <h3>🧪 Test Instructions</h3>
+            <ol>
+                <li><strong>Get Widget ID:</strong> Go to MSG91 dashboard and get your Widget ID</li>
+                <li><strong>Add Integration Code:</strong> Add the widget code to this page</li>
+                <li><strong>Test Widget:</strong> Try sending OTP to your mobile number</li>
+                <li><strong>Verify OTP:</strong> Enter the OTP in the widget interface</li>
+                <li><strong>Check Logs:</strong> Verify in admin panel that OTP was sent</li>
+            </ol>
+        </div>
+
+        <div class="widget-section">
+            <h3>📊 Test Results</h3>
+            <div id="test-results">
+                <div class="status info">
+                    <strong>⏳ Waiting for Widget Integration</strong><br>
+                    Once you add the MSG91 widget code, test results will appear here.
+                </div>
+            </div>
+        </div>
+
+        <div class="widget-section">
+            <h3>🔗 Quick Links</h3>
+            <ul>
+                <li><a href="register.html">📝 Registration Form</a></li>
+                <li><a href="login.html">🔐 Login Form</a></li>
+                <li><a href="php/admin_otp_logs.php">📊 OTP Logs</a></li>
+                <li><a href="admin_dashboard.php">🏠 Admin Dashboard</a></li>
+                <li><a href="test_otp_system.php">🧪 Complete OTP Test</a></li>
+            </ul>
+        </div>
+
+        <div class="widget-section">
+            <h3>📞 Next Steps</h3>
+            <ol>
+                <li>Complete your MSG91 widget setup</li>
+                <li>Get the Widget ID and integration code</li>
+                <li>Share the Widget ID with me</li>
+                <li>I'll help integrate it into your registration forms</li>
+                <li>Test the complete registration flow</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // This will be replaced with actual MSG91 widget code
+        console.log('MSG91 Widget Test Page Loaded');
+        console.log('Waiting for Widget ID to integrate MSG91 widget');
+        
+        // Placeholder for widget integration
+        function integrateWidget(widgetId, templateId) {
+            console.log('Integrating MSG91 Widget:', {widgetId, templateId});
+            
+            // Remove placeholder
+            document.getElementById('msg91-widget-placeholder').innerHTML = `
+                <h4>✅ MSG91 Widget Integrated</h4>
+                <p>Widget ID: ${widgetId}</p>
+                <p>Template ID: ${templateId}</p>
+                <p>Ready for testing!</p>
+            `;
+            
+            // Update test results
+            document.getElementById('test-results').innerHTML = `
+                <div class="status success">
+                    <strong>✅ Widget Integration Ready</strong><br>
+                    Widget ID: ${widgetId}<br>
+                    Template ID: ${templateId}<br>
+                    Ready to test OTP functionality!
+                </div>
+            `;
+        }
+        
+        // Example usage (replace with actual widget ID)
+        // integrateWidget('your_widget_id_here', 'your_template_id_here');
+    </script>
+</body>
+</html> 

@@ -1,0 +1,224 @@
+const cityPlans = {
+  'mumbai': {
+    sights: [
+      { name: 'Gateway of India', cost: 0 },
+      { name: 'Marine Drive', cost: 0 },
+      { name: 'Elephanta Caves', cost: 250 },
+      { name: 'Chhatrapati Shivaji Maharaj Terminus', cost: 0 },
+      { name: 'Juhu Beach', cost: 0 },
+      { name: 'Hanging Gardens', cost: 0 },
+      { name: 'Siddhivinayak Temple', cost: 0 }
+    ],
+    hotel: 3000,
+    food: 800,
+    transport: 500
+  },
+  'delhi': {
+    sights: [
+      { name: 'Red Fort', cost: 500 },
+      { name: 'Qutub Minar', cost: 600 },
+      { name: 'India Gate', cost: 0 },
+      { name: 'Lotus Temple', cost: 0 },
+      { name: 'Akshardham Temple', cost: 0 },
+      { name: 'Humayun’s Tomb', cost: 600 },
+      { name: 'Jama Masjid', cost: 0 }
+    ],
+    hotel: 2500,
+    food: 700,
+    transport: 400
+  },
+  'jaipur': {
+    sights: [
+      { name: 'Amber Fort', cost: 100 },
+      { name: 'Hawa Mahal', cost: 50 },
+      { name: 'City Palace', cost: 200 },
+      { name: 'Jantar Mantar', cost: 50 },
+      { name: 'Nahargarh Fort', cost: 100 },
+      { name: 'Albert Hall Museum', cost: 40 },
+      { name: 'Jaigarh Fort', cost: 70 }
+    ],
+    hotel: 2000,
+    food: 600,
+    transport: 350
+  },
+  'goa': {
+    sights: [
+      { name: 'Baga Beach', cost: 0 },
+      { name: 'Fort Aguada', cost: 50 },
+      { name: 'Dudhsagar Falls', cost: 400 },
+      { name: 'Basilica of Bom Jesus', cost: 0 },
+      { name: 'Anjuna Beach', cost: 0 },
+      { name: 'Calangute Beach', cost: 0 },
+      { name: 'Chapora Fort', cost: 0 }
+    ],
+    hotel: 3500,
+    food: 900,
+    transport: 600
+  },
+  'udaipur': {
+    sights: [
+      { name: 'City Palace', cost: 300 },
+      { name: 'Lake Pichola Boat Ride', cost: 400 },
+      { name: 'Jagdish Temple', cost: 0 },
+      { name: 'Sajjangarh Palace', cost: 100 },
+      { name: 'Fateh Sagar Lake', cost: 0 },
+      { name: 'Bagore Ki Haveli', cost: 100 },
+      { name: 'Saheliyon Ki Bari', cost: 50 }
+    ],
+    hotel: 2800,
+    food: 700,
+    transport: 400
+  },
+  'kerala': {
+    sights: [
+      { name: 'Backwaters of Alleppey', cost: 500 },
+      { name: 'Munnar Tea Gardens', cost: 0 },
+      { name: 'Periyar Wildlife Sanctuary', cost: 450 },
+      { name: 'Kumarakom Bird Sanctuary', cost: 100 },
+      { name: 'Athirappilly Waterfalls', cost: 50 },
+      { name: 'Fort Kochi', cost: 0 },
+      { name: 'Varkala Beach', cost: 0 }
+    ],
+    hotel: 3200,
+    food: 800,
+    transport: 500
+  },
+  'leh': {
+    sights: [
+      { name: 'Pangong Lake', cost: 0 },
+      { name: 'Nubra Valley', cost: 0 },
+      { name: 'Magnetic Hill', cost: 0 },
+      { name: 'Leh Palace', cost: 100 },
+      { name: 'Shanti Stupa', cost: 0 },
+      { name: 'Hemis Monastery', cost: 50 },
+      { name: 'Khardung La Pass', cost: 0 }
+    ],
+    hotel: 2500,
+    food: 700,
+    transport: 600
+  },
+  'varanasi': {
+    sights: [
+      { name: 'Kashi Vishwanath Temple', cost: 0 },
+      { name: 'Dashashwamedh Ghat', cost: 0 },
+      { name: 'Assi Ghat', cost: 0 },
+      { name: 'Sarnath', cost: 5 },
+      { name: 'Manikarnika Ghat', cost: 0 },
+      { name: 'Bharat Kala Bhavan Museum', cost: 20 },
+      { name: 'Ramnagar Fort', cost: 50 }
+    ],
+    hotel: 1500,
+    food: 500,
+    transport: 300
+  },
+  'amritsar': {
+    sights: [
+      { name: 'Golden Temple', cost: 0 },
+      { name: 'Jallianwala Bagh', cost: 0 },
+      { name: 'Wagah Border Ceremony', cost: 0 },
+      { name: 'Partition Museum', cost: 10 },
+      { name: 'Gobindgarh Fort', cost: 100 },
+      { name: 'Durgiana Temple', cost: 0 },
+      { name: 'Maharaja Ranjit Singh Museum', cost: 10 }
+    ],
+    hotel: 1800,
+    food: 600,
+    transport: 400
+  },
+  'rishikesh': {
+    sights: [
+      { name: 'Laxman Jhula', cost: 0 },
+      { name: 'Ram Jhula', cost: 0 },
+      { name: 'Triveni Ghat', cost: 0 },
+      { name: 'Neelkanth Mahadev Temple', cost: 0 },
+      { name: 'Parmarth Niketan Ashram', cost: 0 },
+      { name: 'Beatles Ashram', cost: 150 },
+      { name: 'Kunjapuri Devi Temple', cost: 0 }
+    ],
+    hotel: 1200,
+    food: 500,
+    transport: 300
+  },
+  'hampi': {
+    sights: [
+      { name: 'Virupaksha Temple', cost: 0 },
+      { name: 'Vittala Temple', cost: 30 },
+      { name: 'Lotus Mahal', cost: 10 },
+      { name: 'Elephant Stables', cost: 10 },
+      { name: 'Hampi Bazaar', cost: 0 },
+      { name: 'Matanga Hill', cost: 0 },
+      { name: 'Queen’s Bath', cost: 10 }
+    ],
+    hotel: 1000,
+    food: 400,
+    transport: 200
+  },
+  'jodhpur': {
+    sights: [
+      { name: 'Mehrangarh Fort', cost: 100 },
+      { name: 'Umaid Bhawan Palace', cost: 30 },
+      { name: 'Jaswant Thada', cost: 20 },
+      { name: 'Clock Tower', cost: 0 },
+      { name: 'Mandore Gardens', cost: 0 },
+      { name: 'Rao Jodha Desert Rock Park', cost: 50 },
+      { name: 'Toorji Ka Jhalra', cost: 0 }
+    ],
+    hotel: 2000,
+    food: 600,
+    transport: 300
+  },
+  'shimla': {
+    sights: [
+      { name: 'The Ridge', cost: 0 },
+      { name: 'Jakhoo Temple', cost: 0 },
+      { name: 'Christ Church', cost: 0 },
+      { name: 'Kufri', cost: 0 },
+      { name: 'Mall Road', cost: 0 },
+      { name: 'Tara Devi Temple', cost: 0 },
+      { name: 'Shimla State Museum', cost: 20 }
+    ],
+    hotel: 2500,
+    food: 700,
+    transport: 400
+  },
+  'ooty': {
+    sights: [
+      { name: 'Ooty Lake', cost: 10 },
+      { name: 'Botanical Gardens', cost: 30 },
+      { name: 'Doddabetta Peak', cost: 10 },
+      { name: 'Rose Garden', cost: 30 },
+      { name: 'Nilgiri Mountain Railway', cost: 25 },
+      { name: 'Pykara Falls', cost: 0 },
+      { name: 'Emerald Lake', cost: 0 }
+    ],
+    hotel: 2200,
+    food: 600,
+    transport: 300
+  },
+  'kodaikanal': {
+    sights: [
+      { name: 'Kodaikanal Lake', cost: 0 },
+      { name: 'Coaker’s Walk', cost: 10 },
+      { name: 'Bryant Park', cost: 30 },
+      { name: 'Pillar Rocks', cost: 5 },
+      { name: 'Silver Cascade Falls', cost: 0 },
+      { name: 'Guna Caves', cost: 0 },
+      { name: 'Berijam Lake', cost: 0 }
+    ],
+    hotel: 2000,
+    food: 600,
+    transport: 300
+  },
+  'gangtok': {
+    sights: [
+      { name: 'Tsomgo Lake', cost: 0 },
+      { name: 'Nathula Pass', cost: 0 },
+      { name: 'Rumtek Monastery', cost: 10 },
+      { name: 'MG Road', cost: 0 },
+      { name: 'Hanuman Tok', cost: 0 },
+      { name: 'Banjhakri Falls', cost: 10 },
+      { name: 'Enchey Monastery', cost: 0 }
+    ],
+    hotel: 1800
+::contentReference[oaicite:0]{index=0}
+ 

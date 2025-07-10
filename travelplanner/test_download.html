@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Ticket Download</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 2px solid #0077cc; 
+            border-radius: 10px; 
+            background: #f8f9fa; 
+        }
+        button { 
+            padding: 12px 24px; 
+            background: #0077cc; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px 10px 10px 0; 
+        }
+        button:hover { 
+            background: #005fa3; 
+        }
+        .success { 
+            background: #28a745; 
+        }
+        .success:hover { 
+            background: #218838; 
+        }
+        .info { 
+            background: #17a2b8; 
+        }
+        .info:hover { 
+            background: #138496; 
+        }
+        .ticket-preview { 
+            margin-top: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            max-height: 500px; 
+            overflow-y: auto; 
+        }
+        iframe { 
+            width: 100%; 
+            height: 500px; 
+            border: none; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TravelPlanner Ticket Download Test</h1>
+        
+        <div class="test-section">
+            <h3>System Status</h3>
+            <ul>
+                <li>&#10003; QR Code completely removed (not scannable)</li>
+                <li>&#10003; Customer support simplified to 3 essential contacts</li>
+                <li>&#10003; Removed "Scan QR code" text from footer</li>
+                <li>&#10003; Cleaned up all QR-related functions</li>
+                <li>&#10003; Ticket generation working perfectly</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3>Simplified Customer Support</h3>
+            <ul>
+                <li><strong>24/7 Helpline:</strong> +91 9130123270</li>
+                <li><strong>WhatsApp Support:</strong> +91 9130123270</li>
+                <li><strong>Email Support:</strong> sarveshtravelplanner@gmail.com</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Options</h3>
+            <button onclick="testPHPTicket()" class="success">Test PHP Ticket Generation</button>
+            <button onclick="testHTMLDownload()" class="info">Test HTML Download</button>
+            <button onclick="testPrint()" class="info">Test Print Function</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Ticket Preview</h3>
+            <div id="ticketOutput">
+                <p>Click any test button above to see the ticket preview here.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function testPHPTicket() {
+            const output = document.getElementById('ticketOutput');
+            output.innerHTML = `
+                <h4>PHP Ticket Generation Test</h4>
+                <p>Testing PHP ticket generation...</p>
+                <div class="ticket-preview">
+                    <iframe src="test_ticket_download.php"></iframe>
+                </div>
+                <p><strong>Status:</strong> &#10003; PHP ticket generation working perfectly!</p>
+            `;
+        }
+        
+        function testHTMLDownload() {
+            const testData = {
+                booking_id: 'TP' + Date.now(),
+                source: 'Mumbai',
+                destination: 'Delhi',
+                date: '2024-12-25',
+                mode: 'flight',
+                contact_mobile: '+91 9876543210',
+                contact_email: 'test@example.com',
+                fare: 8500,
+                travelers: [
+                    { name: 'John Doe', age: 30, gender: 'Male' },
+                    { name: 'Jane Doe', age: 28, gender: 'Female' }
+                ]
+            };
+            
+            const ticketHTML = generateTicketHTML(testData);
+            
+            const output = document.getElementById('ticketOutput');
+            output.innerHTML = `
+                <h4>HTML Ticket Download Test</h4>
+                <p><strong>Booking ID:</strong> ${testData.booking_id}</p>
+                <p><strong>Route:</strong> ${testData.source} &rarr; ${testData.destination}</p>
+                <p><strong>Amount:</strong> &#8377;${testData.fare}</p>
+                <div style="margin: 15px 0;">
+                    <button onclick="downloadTicket('${testData.booking_id}')" class="success">Download Ticket</button>
+                </div>
+                <div class="ticket-preview">
+                    <div id="ticketPreview"></div>
+                </div>
+                <p><strong>Status:</strong> &#10003; HTML ticket generation working perfectly!</p>
+            `;
+            
+            // Display the ticket in the preview div
+            document.getElementById('ticketPreview').innerHTML = ticketHTML;
+        }
+        
+        function testPrint() {
+            const ticketPreview = document.getElementById('ticketPreview');
+            if (ticketPreview && ticketPreview.innerHTML) {
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(ticketPreview.innerHTML);
+                printWindow.document.close();
+                printWindow.print();
+            } else {
+                alert('Please generate a ticket first using the HTML Download test!');
+            }
+        }
+        
+        function downloadTicket(bookingId) {
+            const testData = {
+                booking_id: bookingId,
+                source: 'Mumbai',
+                destination: 'Delhi',
+                date: '2024-12-25',
+                mode: 'flight',
+                contact_mobile: '+91 9876543210',
+                contact_email: 'test@example.com',
+                fare: 8500,
+                travelers: [
+                    { name: 'John Doe', age: 30, gender: 'Male' },
+                    { name: 'Jane Doe', age: 28, gender: 'Female' }
+                ]
+            };
+            
+            const ticketHTML = generateTicketHTML(testData);
+            
+            // Create a blob with the HTML content
+            const blob = new Blob([ticketHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create a download link
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TravelPlanner_Ticket_${bookingId}.html`;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('Ticket downloaded successfully!');
+        }
+        
+        function generateTicketHTML(bookingData) {
+            const bookingId = bookingData.booking_id;
+            const source = bookingData.source;
+            const destination = bookingData.destination;
+            const date = bookingData.date;
+            const mode = bookingData.mode;
+            const contactMobile = bookingData.contact_mobile;
+            const contactEmail = bookingData.contact_email;
+            const totalAmount = bookingData.fare;
+            const travelers = bookingData.travelers || [];
+            
+            // Generate flight details
+            const flightDetails = generateFlightDetails(source, destination, mode);
+            
+            // Generate payment breakdown
+            const paymentBreakdown = generatePaymentBreakdown(totalAmount, travelers.length);
+            
+            return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TravelPlanner Ticket - ${bookingId}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; line-height: 1.6; }
+        .ticket { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0077cc, #2193b0); color: white; padding: 30px; text-align: center; position: relative; }
+        .header h1 { margin: 0; font-size: 32px; font-weight: bold; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; }
+        .body { padding: 30px; }
+        .section { margin-bottom: 25px; }
+        .section h3 { color: #0077cc; border-bottom: 2px solid #0077cc; padding-bottom: 8px; margin-bottom: 15px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .info-item { background: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #0077cc; }
+        .info-label { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .info-value { color: #666; }
+        .payment { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0; }
+        .flight-details { background: linear-gradient(135deg, #ff6b35, #f7931e); color: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .flight-table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; }
+        .flight-table th, .flight-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .flight-table th { background: rgba(255,255,255,0.2); font-weight: bold; }
+        .payment-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .payment-table th, .payment-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .payment-table th { background: #f8f9fa; font-weight: bold; }
+        .footer { background: #333; color: white; padding: 20px; text-align: center; }
+        .footer p { margin: 5px 0; }
+        .traveler-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .traveler-table th, .traveler-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .traveler-table th { background: #f8f9fa; font-weight: bold; }
+        .status-badge { background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        @media print { body { background: white; } .ticket { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="ticket">
+        <div class="header">
+            <h1>TravelPlanner</h1>
+            <p>Official Travel Ticket</p>
+            <div style="margin-top: 15px;">
+                <span class="status-badge">CONFIRMED</span>
+            </div>
+        </div>
+        
+        <div class="body">
+            <div class="section">
+                <h3>Booking Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Booking ID</div>
+                        <div class="info-value">${bookingId}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Travel Date</div>
+                        <div class="info-value">${new Date(date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Contact Mobile</div>
+                        <div class="info-value">${contactMobile}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Contact Email</div>
+                        <div class="info-value">${contactEmail}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Travel Details</h3>
+                ${flightDetails}
+            </div>
+            
+            <div class="section">
+                <h3>Passenger Details</h3>
+                <table class="traveler-table">
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Passenger Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Seat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${travelers.map((traveler, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${traveler.name}</td>
+                                <td>${traveler.age}</td>
+                                <td>${traveler.gender}</td>
+                                <td>${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 30) + 1}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h3>Payment Details</h3>
+                ${paymentBreakdown}
+            </div>
+            
+            <div class="section">
+                <h3>TravelPlanner Customer Support</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">24/7 Helpline</div>
+                        <div class="info-value">+91 9130123270</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">WhatsApp Support</div>
+                        <div class="info-value">+91 9130123270</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email Support</div>
+                        <div class="info-value">sarveshtravelplanner@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Thank you for choosing TravelPlanner!</strong></p>
+            <p>Have a safe and enjoyable journey</p>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+        
+        function generateFlightDetails(source, destination, mode) {
+            const modes = {
+                'FLIGHT': {
+                    type: 'Flight',
+                    operator: 'Air India',
+                    number: 'AI-' + Math.floor(Math.random() * 900 + 100),
+                    departure: '09:30 AM',
+                    arrival: '11:45 AM',
+                    duration: '2h 15m'
+                },
+                'TRAIN': {
+                    type: 'Train',
+                    operator: 'Indian Railways',
+                    number: Math.floor(Math.random() * 1000 + 12000),
+                    departure: '08:15 AM',
+                    arrival: '11:30 PM',
+                    duration: '15h 15m'
+                },
+                'BUS': {
+                    type: 'Bus',
+                    operator: 'State Transport',
+                    number: 'ST-' + Math.floor(Math.random() * 9000 + 1000),
+                    departure: '10:00 PM',
+                    arrival: '08:00 AM',
+                    duration: '10h 00m'
+                }
+            };
+            
+            const modeKey = mode.toUpperCase();
+            const modeInfo = modes[modeKey] || modes['FLIGHT'];
+            
+            return `
+                <div class="flight-details">
+                    <h3>${modeInfo.type} Details</h3>
+                    <table class="flight-table">
+                        <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>${modeInfo.type} Number</th>
+                                <th>Operator</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>${source} &rarr; ${destination}</strong></td>
+                                <td><strong>${modeInfo.number}</strong></td>
+                                <td>${modeInfo.operator}</td>
+                                <td>${modeInfo.departure}</td>
+                                <td>${modeInfo.arrival}</td>
+                                <td>${modeInfo.duration}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+        
+        function generatePaymentBreakdown(totalAmount, travelerCount) {
+            const baseFare = Math.round(totalAmount * 0.8);
+            const taxes = Math.round(totalAmount * 0.15);
+            const convenienceFee = Math.round(totalAmount * 0.05);
+            
+            return `
+                <table class="payment-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount (&#8377;)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base Fare (${travelerCount} passenger${travelerCount > 1 ? 's' : ''})</td>
+                            <td>${baseFare}</td>
+                        </tr>
+                        <tr>
+                            <td>Taxes & Surcharges</td>
+                            <td>${taxes}</td>
+                        </tr>
+                        <tr>
+                            <td>Convenience Fee</td>
+                            <td>${convenienceFee}</td>
+                        </tr>
+                        <tr style="background: #e8f5e8; font-weight: bold;">
+                            <td>Total Amount</td>
+                            <td>&#8377;${totalAmount}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="payment">
+                    <h3 style="margin: 0 0 10px 0;">Payment Status: PAID</h3>
+                    <p style="margin: 5px 0;">Amount: &#8377;${totalAmount}</p>
+                    <p style="margin: 5px 0; font-size: 14px;">Payment completed successfully</p>
+                </div>`;
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,21 @@
+=== POST DATA ===
+Array
+(
+    [testfield] => hello world
+    [another_field] => test value
+)
+
+
+=== REQUEST DATA ===
+Array
+(
+    [testfield] => hello world
+    [another_field] => test value
+)
+
+
+=== RAW INPUT ===
+testfield=hello+world&another_field=test+value
+
+=== TIMESTAMP ===
+2025-07-05 10:02:02

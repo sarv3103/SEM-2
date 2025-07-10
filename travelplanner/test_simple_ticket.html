@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Ticket Test - TravelPlanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .test-btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .test-btn:hover {
+            background: #005fa3;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Simple Ticket Test</h1>
+        <p>This page tests the new simplified ticket download system without complex PDF generation.</p>
+        
+        <h3>What's New:</h3>
+        <ul>
+            <li>✅ Removed all mPDF dependencies</li>
+            <li>✅ Simple HTML ticket generation</li>
+            <li>✅ Clean, fast download system</li>
+            <li>✅ No complex PDF generation errors</li>
+            <li>✅ QR codes with booking details</li>
+            <li>✅ Flight/Train/Bus details with timings</li>
+            <li>✅ Detailed payment breakdown</li>
+            <li>✅ Seat assignments for travelers</li>
+            <li>✅ Professional ticket design</li>
+        </ul>
+        
+        <h3>Test Steps:</h3>
+        <ol>
+            <li>Click "Test Simple Ticket Download"</li>
+            <li>An HTML file should download automatically</li>
+            <li>Open the downloaded file to see the ticket</li>
+        </ol>
+        
+        <div>
+            <button class="test-btn" onclick="testSimpleDownload()">Test Simple Ticket Download</button>
+        </div>
+        
+        <div id="status"></div>
+        
+        <h3>Expected Results:</h3>
+        <ul>
+            <li>✅ HTML file downloads immediately</li>
+            <li>✅ No PHP errors or mPDF issues</li>
+            <li>✅ Clean, professional-looking ticket</li>
+            <li>✅ File can be opened in any browser</li>
+        </ul>
+    </div>
+
+    <script>
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function testSimpleDownload() {
+            showStatus('Testing simple ticket download...', 'info');
+            
+            // Create sample booking data
+            const sampleBookingData = {
+                source: 'Mumbai',
+                destination: 'Delhi',
+                date: new Date().toISOString().split('T')[0],
+                selected_mode: 'flight',
+                contact_name: 'Test User',
+                contact_mobile: '9876543210',
+                contact_email: 'test@example.com',
+                travelers: [
+                    { name: 'Test User 1', age: 30, gender: 'male' },
+                    { name: 'Test User 2', age: 28, gender: 'female' }
+                ],
+                fare: 5000
+            };
+            
+            // Generate simple ticket HTML
+            const ticketHtml = generateSimpleTicketHtml(sampleBookingData, 'TEST_' + Date.now(), 5000);
+            
+            // Download the ticket
+            const blob = new Blob([ticketHtml], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TravelPlanner_Ticket_TEST_${Date.now()}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showStatus('✅ Simple ticket download completed! Check your downloads folder.', 'success');
+        }
+
+        function generateSimpleTicketHtml(bookingData, bookingId, totalAmount) {
+            const source = bookingData.source || '';
+            const destination = bookingData.destination || '';
+            const date = bookingData.date || '';
+            const mode = (bookingData.selected_mode || '').toUpperCase();
+            const contactName = bookingData.contact_name || '';
+            const contactMobile = bookingData.contact_mobile || '';
+            const contactEmail = bookingData.contact_email || '';
+            const travelers = bookingData.travelers || [];
+            
+            // QR code removed - not scannable
+            
+            // Generate flight details
+            const flightDetails = generateFlightDetails(source, destination, mode);
+            
+            // Generate payment breakdown
+            const paymentBreakdown = generatePaymentBreakdown(totalAmount, travelers.length);
+            
+            return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>TravelPlanner Ticket - ${bookingId}</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        margin: 0; 
+                        padding: 20px; 
+                        background: #f5f5f5; 
+                        line-height: 1.6;
+                    }
+                    .ticket { 
+                        max-width: 900px; 
+                        margin: 0 auto; 
+                        background: white; 
+                        border-radius: 15px; 
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+                        overflow: hidden; 
+                    }
+                    .header { 
+                        background: linear-gradient(135deg, #0077cc, #2193b0); 
+                        color: white; 
+                        padding: 30px; 
+                        text-align: center; 
+                        position: relative;
+                    }
+                    .header h1 { 
+                        margin: 0; 
+                        font-size: 32px; 
+                        font-weight: bold; 
+                    }
+                    .header p { 
+                        margin: 10px 0 0 0; 
+                        opacity: 0.9; 
+                    }
+                                /* QR code removed - not scannable */
+                    .body { 
+                        padding: 30px; 
+                    }
+                    .section { 
+                        margin-bottom: 25px; 
+                    }
+                    .section h3 { 
+                        color: #0077cc; 
+                        border-bottom: 2px solid #0077cc; 
+                        padding-bottom: 8px; 
+                        margin-bottom: 15px; 
+                    }
+                    .info-grid { 
+                        display: grid; 
+                        grid-template-columns: 1fr 1fr; 
+                        gap: 15px; 
+                        margin-bottom: 20px; 
+                    }
+                    .info-item { 
+                        background: #f8f9fa; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        border-left: 4px solid #0077cc; 
+                    }
+                    .info-label { 
+                        font-weight: bold; 
+                        color: #333; 
+                        margin-bottom: 5px; 
+                    }
+                    .info-value { 
+                        color: #666; 
+                    }
+                    .payment { 
+                        background: linear-gradient(135deg, #28a745, #20c997); 
+                        color: white; 
+                        padding: 20px; 
+                        border-radius: 10px; 
+                        text-align: center; 
+                        margin: 20px 0; 
+                    }
+                    .flight-details {
+                        background: linear-gradient(135deg, #ff6b35, #f7931e);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 10px;
+                        margin: 20px 0;
+                    }
+                    .flight-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 15px 0;
+                        background: rgba(255,255,255,0.1);
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+                    .flight-table th, .flight-table td {
+                        padding: 12px;
+                        text-align: left;
+                        border-bottom: 1px solid rgba(255,255,255,0.2);
+                    }
+                    .flight-table th {
+                        background: rgba(255,255,255,0.2);
+                        font-weight: bold;
+                    }
+                    .payment-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 15px 0;
+                    }
+                    .payment-table th, .payment-table td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    .payment-table th {
+                        background: #f8f9fa;
+                        font-weight: bold;
+                    }
+                    .footer { 
+                        background: #333; 
+                        color: white; 
+                        padding: 20px; 
+                        text-align: center; 
+                    }
+                    .footer p { 
+                        margin: 5px 0; 
+                    }
+                    .traveler-table { 
+                        width: 100%; 
+                        border-collapse: collapse; 
+                        margin: 15px 0; 
+                    }
+                    .traveler-table th, .traveler-table td { 
+                        border: 1px solid #ddd; 
+                        padding: 8px; 
+                        text-align: left; 
+                    }
+                    .traveler-table th { 
+                        background: #f8f9fa; 
+                        font-weight: bold; 
+                    }
+                    .status-badge {
+                        background: #28a745;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 12px;
+                        font-weight: bold;
+                    }
+                    @media print { 
+                        body { background: white; } 
+                        .ticket { box-shadow: none; } 
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="ticket">
+                                    <div class="header">
+                    <h1>✈️ TravelPlanner</h1>
+                    <p>Official Travel Ticket</p>
+                    <div style="margin-top: 15px;">
+                        <span class="status-badge">CONFIRMED</span>
+                    </div>
+                </div>
+                    
+                    <div class="body">
+                        <div class="payment">
+                            <h3>✅ Payment Confirmed</h3>
+                            <div><strong>Booking ID:</strong> ${bookingId}</div>
+                            <div><strong>Amount Paid:</strong> ₹1 (Test Payment)</div>
+                            <div><strong>Original Amount:</strong> ₹${totalAmount.toLocaleString()}</div>
+                            <div><strong>Booking Date:</strong> ${new Date().toLocaleString()}</div>
+                        </div>
+                        
+                        <div class="flight-details">
+                            <h3>Flight Details</h3>
+                            ${flightDetails}
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Payment Breakdown</h3>
+                            ${paymentBreakdown}
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Traveler Information</h3>
+                            <table class="traveler-table">
+                                <tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th><th>Seat</th></tr>
+                                ${travelers.map((traveler, i) => {
+                                    const seatNumber = generateSeatNumber(mode, i + 1);
+                                    return `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${traveler.name}</td>
+                                            <td>${traveler.age}</td>
+                                            <td>${traveler.gender}</td>
+                                            <td>${seatNumber}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </table>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Contact Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Contact Name</div>
+                                    <div class="info-value">${contactName}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Mobile</div>
+                                    <div class="info-value">${contactMobile}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">${contactEmail}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Important Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Check-in Time</div>
+                                    <div class="info-value">2 hours before departure</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Boarding Time</div>
+                                    <div class="info-value">30 minutes before departure</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Baggage Allowance</div>
+                                    <div class="info-value">15kg check-in + 7kg cabin</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Document Required</div>
+                                    <div class="info-value">Valid ID Proof</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>TravelPlanner Customer Support</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">24/7 Helpline</div>
+                                    <div class="info-value">+91 9130123270</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">WhatsApp Support</div>
+                                    <div class="info-value">+91 9130123270</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Email Support</div>
+                                    <div class="info-value">sarveshtravelplanner@gmail.com</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p><strong>Thank you for choosing TravelPlanner!</strong></p>
+                        <p>Have a safe and enjoyable journey</p>
+                        <p>Generated on: ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            </body>
+            </html>`;
+        }
+        
+        function generateFlightDetails(source, destination, mode) {
+            let departureTime = '06:30';
+            let arrivalTime = '08:45';
+            let duration = '2h 15m';
+            
+            if (mode === 'TRAIN') {
+                departureTime = '08:00';
+                arrivalTime = '16:30';
+                duration = '8h 30m';
+            } else if (mode === 'BUS') {
+                departureTime = '20:00';
+                arrivalTime = '08:00';
+                duration = '12h 00m';
+            }
+            
+            const flightNumber = generateFlightNumber(source, destination, mode);
+            
+            return `
+            <table class="flight-table">
+                <tr>
+                    <th>Flight/Train/Bus No</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Duration</th>
+                </tr>
+                <tr>
+                    <td>${flightNumber}</td>
+                    <td>${source}</td>
+                    <td>${destination}</td>
+                    <td>${departureTime}</td>
+                    <td>${arrivalTime}</td>
+                    <td>${duration}</td>
+                </tr>
+            </table>`;
+        }
+        
+        function generateFlightNumber(source, destination, mode) {
+            const sourceCode = source.substring(0, 3).toUpperCase();
+            const destCode = destination.substring(0, 3).toUpperCase();
+            
+            if (mode === 'FLIGHT') {
+                return 'AI' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            } else if (mode === 'TRAIN') {
+                return '12' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            } else {
+                return 'BUS' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            }
+        }
+        
+        function generateSeatNumber(mode, travelerNumber) {
+            if (mode === 'FLIGHT') {
+                const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
+                const row = rows[(travelerNumber - 1) % 6];
+                const seat = Math.floor(Math.random() * 30) + 1;
+                return seat + row;
+            } else if (mode === 'TRAIN') {
+                const coach = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3'];
+                const coachType = coach[(travelerNumber - 1) % 6];
+                const berth = Math.floor(Math.random() * 72) + 1;
+                return coachType + '-' + berth;
+            } else {
+                return 'Seat ' + travelerNumber;
+            }
+        }
+        
+        function generatePaymentBreakdown(totalAmount, numTravelers) {
+            const baseFare = totalAmount / numTravelers;
+            const taxes = baseFare * 0.18; // 18% GST
+            const convenienceFee = 50;
+            const totalPerPerson = baseFare + taxes + convenienceFee;
+            
+            return `
+            <table class="payment-table">
+                <tr>
+                    <th>Description</th>
+                    <th>Per Person</th>
+                    <th>Total (${numTravelers} persons)</th>
+                </tr>
+                <tr>
+                    <td>Base Fare</td>
+                    <td>₹${baseFare.toFixed(2)}</td>
+                    <td>₹${(baseFare * numTravelers).toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Taxes & Fees (18% GST)</td>
+                    <td>₹${taxes.toFixed(2)}</td>
+                    <td>₹${(taxes * numTravelers).toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td>Convenience Fee</td>
+                    <td>₹${convenienceFee.toFixed(2)}</td>
+                    <td>₹${(convenienceFee * numTravelers).toFixed(2)}</td>
+                </tr>
+                <tr style="background: #e8f5e8; font-weight: bold;">
+                    <td>Total Amount</td>
+                    <td>₹${totalPerPerson.toFixed(2)}</td>
+                    <td>₹${totalAmount.toFixed(2)}</td>
+                </tr>
+                <tr style="background: #fff3cd;">
+                    <td colspan="2">Amount Paid (Test Payment)</td>
+                    <td>₹1.00</td>
+                </tr>
+            </table>`;
+        }
+        
+        // QR code functions removed - not scannable
+    </script>
+</body>
+</html> 

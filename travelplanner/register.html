@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Register - TravelPlanner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .register-container {
+      max-width: 400px;
+      margin: 3em auto;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0077cc22;
+      padding: 2.5em 2em;
+      font-family: 'Poppins', Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .register-container::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: -40px; right: -40px; bottom: -40px;
+      background: radial-gradient(circle at 80% 20%, #0077cc33 0%, transparent 70%);
+      z-index: 0;
+    }
+    .register-container > * { position: relative; z-index: 1; }
+    .register-container h2 { color: #0077cc; margin-bottom: 1em; font-weight: 700; letter-spacing: 1px; }
+    .register-container input, .register-container button {
+      width: 100%;
+      padding: 0.8em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      border: 1px solid #e0eafc;
+      font-size: 1em;
+      box-shadow: 0 1px 4px #0077cc11;
+    }
+    .register-container button { background: linear-gradient(90deg, #0077cc 0%, #2193b0 100%); color: #fff; font-weight: 600; border: none; transition: background 0.2s; box-shadow: 0 2px 8px #0077cc22; }
+    .register-container button:hover { background: linear-gradient(90deg, #2193b0 0%, #0077cc 100%); }
+    .success, .error {
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8em 1em;
+      margin-top: 1em;
+      text-align: center;
+      font-size: 1.05em;
+      animation: fadeIn 0.5s;
+      box-shadow: 0 2px 8px #0077cc11;
+    }
+    .success { color: #28a745; background: #eafaf1; }
+    .error { color: #c0392b; background: #fdecea; }
+    .success .icon, .error .icon { font-size: 1.3em; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+    
+    /* OTP Verification Styles */
+    .otp-verification {
+      display: none;
+      margin-top: 1em;
+      padding: 1.5em;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px solid #0077cc;
+    }
+    .otp-verification h3 {
+      color: #0077cc;
+      margin-bottom: 1em;
+      text-align: center;
+    }
+    .otp-input-group {
+      margin-bottom: 1em;
+    }
+    .otp-input-group label {
+      display: block;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+      color: #333;
+    }
+    .otp-input-group input {
+      width: 100%;
+      padding: 0.8em;
+      border: 2px solid #0077cc;
+      border-radius: 8px;
+      font-size: 1.2em;
+      text-align: center;
+      letter-spacing: 0.2em;
+      font-weight: bold;
+    }
+    .otp-info {
+      background: #e3f2fd;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      font-size: 0.9em;
+      color: #1976d2;
+    }
+    .otp-info strong {
+      color: #0077cc;
+    }
+  </style>
+</head>
+<body>
+  <!-- Minimal Navbar for Login/Register -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <div class="logo">TravelPlanner</div>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+      
+      <div class="nav-auth">
+        <div class="auth-link">
+          <a href="register.html">Register</a>
+        </div>
+      </div>
+      
+      <div class="nav-toggler">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+  <div class="register-container">
+    <h2>Register</h2>
+    <form id="register-form" autocomplete="off">
+      <input name="first_name" placeholder="First Name" required pattern="[A-Za-z]{2,}" title="First name should be at least 2 letters and only alphabets.">
+      <input name="last_name" placeholder="Last Name" required pattern="[A-Za-z]{2,}" title="Last name should be at least 2 letters and only alphabets.">
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="username" placeholder="Username" required minlength="4" title="Username should be at least 4 characters.">
+      <input name="password" type="password" placeholder="Password" required minlength="6" title="Password should be at least 6 characters.">
+      <button type="submit">Register</button>
+      <p style="text-align:center;">Already have an account? <a href="login.html">Login here</a></p>
+    </form>
+    
+    <!-- Email OTP Verification Section -->
+    <div id="otp-verification" class="otp-verification">
+      <h3>🔐 Verify Your Email</h3>
+      <div class="otp-info">
+        <strong>Email OTP Verification Required:</strong><br>
+        • Email OTP has been sent to your email address<br>
+        • OTP is valid for 10 minutes<br>
+        • Registration will only complete after OTP verification
+      </div>
+      
+      <form id="otp-form">
+        <div class="otp-input-group">
+          <label for="email-otp">📧 Email OTP:</label>
+          <input type="text" id="email-otp" name="email_otp" maxlength="6" placeholder="Enter 6-digit OTP" pattern="[0-9]{6}" title="Please enter 6-digit OTP" required>
+        </div>
+        
+        <button type="submit" style="background: linear-gradient(90deg, #28a745 0%, #20c997 100%);">
+          ✅ Verify OTP & Complete Registration
+        </button>
+      </form>
+      <div id="otp-result"></div>
+    </div>
+    
+    <div id="register-result"></div>
+  </div>
+  
+  <script>
+    // Registration form handling
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      
+      fetch('php/register.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          // Store user ID for OTP verification
+          localStorage.setItem('temp_user_id', data.user_id);
+          
+          // Show success message
+          document.getElementById('register-result').innerHTML = `
+            <div class="success">
+              <span class="icon">✅</span>
+              ${data.msg}
+            </div>
+          `;
+          
+          // Show OTP verification section
+          document.getElementById('otp-verification').style.display = 'block';
+          
+          // Hide registration form
+          document.getElementById('register-form').style.display = 'none';
+          
+          // Show OTP info
+          const email = formData.get('email');
+          document.querySelector('.otp-info').innerHTML = `
+            <strong>Email OTP Verification Required:</strong><br>
+            • Email OTP sent to: <strong>${email}</strong><br>
+            • OTP is valid for 10 minutes<br>
+            • Check your email inbox and spam folder<br>
+            • Registration will only complete after OTP verification
+          `;
+          
+        } else {
+          document.getElementById('register-result').innerHTML = `
+            <div class="error">
+              <span class="icon">❌</span>
+              ${data.msg}
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById('register-result').innerHTML = `
+          <div class="error">
+            <span class="icon">❌</span>
+            Registration failed. Please try again.
+          </div>
+        `;
+      });
+    });
+    
+    // OTP verification form handling
+    document.getElementById('otp-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const emailOTP = document.getElementById('email-otp').value;
+      const userId = localStorage.getItem('temp_user_id');
+      
+      if (!emailOTP) {
+        document.getElementById('otp-result').innerHTML = `
+          <div class="error">
+            <span class="icon">❌</span>
+            Please enter email OTP
+          </div>
+        `;
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('user_id', userId);
+      formData.append('email_otp', emailOTP);
+      
+      fetch('php/verify_registration_otp.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          document.getElementById('otp-result').innerHTML = `
+            <div class="success">
+              <span class="icon">🎉</span>
+              Registration completed successfully! You can now login.
+            </div>
+          `;
+          
+          // Clear stored user ID
+          localStorage.removeItem('temp_user_id');
+          
+          // Redirect to login after 3 seconds
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 3000);
+          
+        } else {
+          document.getElementById('otp-result').innerHTML = `
+            <div class="error">
+              <span class="icon">❌</span>
+              ${data.msg}
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById('otp-result').innerHTML = `
+          <div class="error">
+            <span class="icon">❌</span>
+            OTP verification failed. Please try again.
+          </div>
+        `;
+      });
+    });
+    
+    // Auto-format OTP inputs
+    document.getElementById('email-otp').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+    });
+  </script>
+</body>
+</html>

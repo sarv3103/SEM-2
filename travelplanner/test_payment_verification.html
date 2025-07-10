@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Payment Verification - TravelPlanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #0077cc;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .mode-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #0077cc;
+        }
+        
+        .mode-selector h3 {
+            color: #0077cc;
+            margin-bottom: 15px;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            border: 2px solid #0077cc;
+            background: white;
+            color: #0077cc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: #0077cc;
+            color: white;
+        }
+        
+        .test-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #0077cc;
+        }
+        
+        .btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #005fa3;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .result.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .sample-ids {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .sample-ids h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .sample-ids code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Test Payment Verification</h1>
+            <p>Debug and verify your payments easily</p>
+        </div>
+        
+        <div class="mode-selector">
+            <h3>🎯 Select Mode</h3>
+            <div class="mode-buttons">
+                <button class="mode-btn active" onclick="setMode('test')">Test Mode</button>
+                <button class="mode-btn" onclick="setMode('live')">Live Mode</button>
+            </div>
+            <div class="test-info" id="mode-info">
+                <strong>Test Mode Active:</strong> Use test Payment IDs and Order IDs from Razorpay test environment.
+            </div>
+        </div>
+        
+        <form id="verification-form">
+            <div class="form-group">
+                <label for="payment_id">Payment ID:</label>
+                <input type="text" id="payment_id" name="payment_id" placeholder="Enter your Payment ID (e.g., pay_xxxxx)" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="order_id">Order ID:</label>
+                <input type="text" id="order_id" name="order_id" placeholder="Enter your Order ID (e.g., order_xxxxx)" required>
+            </div>
+            
+            <button type="submit" class="btn" id="verify-btn">Verify Payment</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        
+        <div class="sample-ids">
+            <h4>📋 Sample Test IDs (for testing)</h4>
+            <p><strong>Test Payment ID:</strong> <code>pay_1DP5mmOlF5G5ag</code></p>
+            <p><strong>Test Order ID:</strong> <code>order_1DP5mmOlF5G5ag</code></p>
+            <p><em>Note: These are example formats. Use actual IDs from your test payments.</em></p>
+        </div>
+        
+        <div class="debug-info" id="debug-info" style="display: none;">
+            <h4>🐛 Debug Information</h4>
+            <div id="debug-content"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'test';
+        
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update button styles
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update mode info
+            const modeInfo = document.getElementById('mode-info');
+            if (mode === 'test') {
+                modeInfo.innerHTML = '<strong>Test Mode Active:</strong> Use test Payment IDs and Order IDs from Razorpay test environment.';
+                modeInfo.style.background = '#fff3cd';
+            } else {
+                modeInfo.innerHTML = '<strong>Live Mode Active:</strong> Use real Payment IDs and Order IDs from actual payments.';
+                modeInfo.style.background = '#f8d7da';
+            }
+        }
+        
+        const form = document.getElementById('verification-form');
+        const result = document.getElementById('result');
+        const verifyBtn = document.getElementById('verify-btn');
+        const debugInfo = document.getElementById('debug-info');
+        const debugContent = document.getElementById('debug-content');
+        
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const paymentId = document.getElementById('payment_id').value.trim();
+            const orderId = document.getElementById('order_id').value.trim();
+            
+            if (!paymentId || !orderId) {
+                showResult('Please enter both Payment ID and Order ID.', 'error');
+                return;
+            }
+            
+            // Show loading
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+            showResult('Verifying your payment, please wait...', 'loading');
+            showDebugInfo(`Mode: ${currentMode}<br>Payment ID: ${paymentId}<br>Order ID: ${orderId}`);
+            
+            try {
+                const response = await fetch('php/verify_payment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `payment_id=${encodeURIComponent(paymentId)}&order_id=${encodeURIComponent(orderId)}`
+                });
+                
+                const responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    showResult(`
+                        <h3>❌ Server Response Error</h3>
+                        <p>The server returned an invalid response. This might be a PHP error.</p>
+                        <p><strong>Response:</strong> ${responseText}</p>
+                    `, 'error');
+                    showDebugInfo(`HTTP Status: ${response.status}<br>Response: ${responseText}`);
+                    return;
+                }
+                
+                if (data.status === 'success') {
+                    showResult(`
+                        <h3>✅ Payment Verified Successfully!</h3>
+                        <p><strong>Payment ID:</strong> ${paymentId}</p>
+                        <p><strong>Order ID:</strong> ${orderId}</p>
+                        <p><strong>Booking ID:</strong> ${data.booking_id || 'N/A'}</p>
+                        <p>${data.message}</p>
+                        ${data.email_sent ? '<p>📧 Your ticket has been sent to your email!</p>' : ''}
+                    `, 'success');
+                } else {
+                    showResult(`
+                        <h3>❌ Payment Verification Failed</h3>
+                        <p>${data.message}</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                            <strong>Possible causes:</strong><br>
+                            • Wrong Payment ID or Order ID<br>
+                            • Payment was not completed<br>
+                            • Using test IDs with live mode (or vice versa)<br>
+                            • API authentication issues
+                        </p>
+                    `, 'error');
+                }
+                
+                showDebugInfo(`HTTP Status: ${response.status}<br>Response: ${JSON.stringify(data, null, 2)}`);
+                
+            } catch (error) {
+                showResult(`
+                    <h3>❌ Connection Error</h3>
+                    <p>Unable to connect to the server. Please check your internet connection and try again.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                        Error: ${error.message}
+                    </p>
+                `, 'error');
+                showDebugInfo(`Error: ${error.message}`);
+            }
+            
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Verify Payment';
+        });
+        
+        function showResult(message, type) {
+            result.innerHTML = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+        }
+        
+        function showDebugInfo(info) {
+            debugContent.innerHTML = info;
+            debugInfo.style.display = 'block';
+        }
+        
+        // Auto-fill from URL parameters if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('payment_id');
+        const orderId = urlParams.get('order_id');
+        
+        if (paymentId) {
+            document.getElementById('payment_id').value = paymentId;
+        }
+        if (orderId) {
+            document.getElementById('order_id').value = orderId;
+        }
+    </script>
+</body>
+</html> 

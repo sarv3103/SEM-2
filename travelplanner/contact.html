@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            margin-top: 100px;
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .contact-header h1 {
+            color: #0077cc;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .contact-info {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        
+        .contact-info h3 {
+            color: #0077cc;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .contact-item i {
+            font-size: 1.5rem;
+            color: #0077cc;
+            margin-right: 1rem;
+            width: 30px;
+        }
+        
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .contact-form h3 {
+            color: #0077cc;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0eafc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0077cc;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #0077cc 0%, #2193b0 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .contact-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .contact-result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .contact-result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .map-section {
+            margin-top: 3rem;
+        }
+        
+        .map-section h3 {
+            color: #0077cc;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .map-container {
+            height: 400px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="booking.html">Booking</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+
+         
+        <div class="nav-auth">
+            <div id="welcome-user" class="welcome-user"></div>
+            <div id="login-link" class="auth-link">
+                <a href="login.html">Login</a>
+            </div>
+            <div class="profile-menu" style="display: none;">
+                <a href="#" id="profile-link" class="profile-link">
+                    <span class="profile-icon">👤</span>
+                    <span class="profile-text">My Profile</span>
+                    <span class="dropdown-arrow">▼</span>
+                </a>
+                <ul class="profile-dropdown">
+                    <li><a href="#" id="edit-profile-link">Edit Profile</a></li>
+                    <li><a href="php/mybookings.php">My Bookings</a></li>
+                    <li><a href="#" id="wallet-management-link">💰 Wallet Management</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="nav-toggler">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>Contact Us</h1>
+            <p>Get in touch with us for any questions, bookings, or travel advice</p>
+        </div>
+
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Get In Touch</h3>
+                
+                <div class="contact-item">
+                    <i>📧</i>
+                    <div>
+                        <strong>Email</strong><br>
+                        <a href="mailto:sarveshtravelplanner@gmail.com">sarveshtravelplanner@gmail.com</a>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i>📞</i>
+                    <div>
+                        <strong>Phone</strong><br>
+                        <a href="tel:+919130123270">+91 9130123270</a>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i>📍</i>
+                    <div>
+                        <strong>Address</strong><br>
+                        TravelPlanner Office<br>
+                        Mumbai, Maharashtra, India
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i>🕒</i>
+                    <div>
+                        <strong>Business Hours</strong><br>
+                        Monday - Friday: 9:00 AM - 6:00 PM<br>
+                        Saturday: 10:00 AM - 4:00 PM<br>
+                        Sunday: Closed
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i>💬</i>
+                    <div>
+                        <strong>Social Media</strong><br>
+                        <a href="#">Facebook</a> | <a href="#">Instagram</a> | <a href="#">Twitter</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Send us a Message</h3>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="e.g., Booking Inquiry, Travel Advice">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" placeholder="Tell us about your travel plans or any questions you have..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+                
+                <div id="contact-result"></div>
+            </div>
+        </div>
+
+        <div class="map-section">
+            <h3>Find Us</h3>
+            <div class="map-container">
+                <div style="text-align: center;">
+                    <h4>📍 Our Location</h4>
+                    <p>TravelPlanner Office<br>
+                    Mumbai, Maharashtra, India</p>
+                    <p><em>Map integration can be added here</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('.submit-btn');
+            const resultDiv = document.getElementById('contact-result');
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            
+            fetch('php/contact.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<div class="contact-result success">${data.msg}</div>`;
+                    this.reset();
+                } else {
+                    resultDiv.innerHTML = `<div class="contact-result error">${data.msg}</div>`;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="contact-result error">Failed to send message. Please try again.</div>`;
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            });
+        });
+    </script>
+    
+    <!-- Include authentication script -->
+    <script src="script.js"></script>
+</body>
+</html> 

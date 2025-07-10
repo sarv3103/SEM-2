@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Travel - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* Enhanced Booking Styles */
+        .booking-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .booking-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .booking-header h1 {
+            color: #0077cc;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .booking-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .booking-step {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0077cc;
+        }
+        
+        .step-title {
+            color: #0077cc;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #0077cc;
+        }
+        
+        .fare-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .fare-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .fare-card:hover, .fare-card.selected {
+            border-color: #0077cc;
+            transform: translateY(-2px);
+        }
+        
+        .fare-card h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+        }
+        
+        .fare-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0077cc;
+            margin: 0.5rem 0;
+        }
+        
+        .fare-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0.5rem 0;
+        }
+        
+        .btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #005fa3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .traveler-field {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #0077cc;
+        }
+        
+        .traveler-field h4 {
+            margin: 0 0 1rem 0;
+            color: #0077cc;
+        }
+        
+        .booking-summary {
+            background: #e8f5e8;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #28a745;
+        }
+        
+        .booking-summary h3 {
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .fare-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script>
+        // Login check - redirect if not logged in
+        function checkLogin() {
+            if (localStorage.getItem('user_logged_in') !== '1') {
+                alert('Please login to book your travel.');
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Date validation
+        function validateDate(dateInput) {
+            const selectedDate = new Date(dateInput);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                alert('Please select a future date for booking.');
+                return false;
+            }
+            return true;
+        }
+        
+        // Set minimum date for all date inputs
+        function setMinDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.min = today;
+                input.addEventListener('change', function() {
+                    validateDate(this.value);
+                });
+            });
+        }
+        
+        // Check login on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkLogin()) {
+                return;
+            }
+            setMinDates();
+        });
+
+        // Enforce login before booking
+        async function enforceLoginBeforeBooking() {
+            try {
+                const res = await fetch('php/session_status.php');
+                const data = await res.json();
+                if (!data.logged_in) {
+                    localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+                    localStorage.setItem('login_message', 'Please login to book a ticket.');
+                    window.location.href = 'login.html';
+                }
+            } catch (e) {
+                localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+                localStorage.setItem('login_message', 'Please login to book a ticket.');
+                window.location.href = 'login.html';
+            }
+        }
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', enforceLoginBeforeBooking);
+
+        // Remove page-load login enforcement
+        // Add login check to booking button
+        function addLoginCheckToBookingButton() {
+            const bookingForm = document.getElementById('travel-form');
+            if (!bookingForm) return;
+            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            if (!submitBtn) return;
+            submitBtn.addEventListener('click', async function(e) {
+                // Only check login if not already checked in form submit
+                if (!window._bookingLoginChecked) {
+                    e.preventDefault();
+                    try {
+                        const res = await fetch('php/session_status.php');
+                        const data = await res.json();
+                        if (!data.logged_in) {
+                            // Show modal instead of redirect
+                            const modal = document.getElementById('login-required-modal');
+                            if (modal) {
+                                modal.style.display = 'flex';
+                                document.getElementById('close-login-required-modal').onclick = function() {
+                                    modal.style.display = 'none';
+                                };
+                            } else {
+                                alert('You need to be logged in to make a booking. Please login or register first.');
+                            }
+                            return;
+                        }
+                        window._bookingLoginChecked = true;
+                        submitBtn.click(); // re-trigger after login check
+                    } catch (e) {
+                        // Show modal instead of redirect
+                        const modal = document.getElementById('login-required-modal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                            document.getElementById('close-login-required-modal').onclick = function() {
+                                modal.style.display = 'none';
+                            };
+                        } else {
+                            alert('You need to be logged in to make a booking. Please login or register first.');
+                        }
+                    }
+                } else {
+                    window._bookingLoginChecked = false;
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', addLoginCheckToBookingButton);
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="booking.html" class="active">Booking</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+
+         
+            <div class="nav-auth">
+                <div id="welcome-user" class="welcome-user"></div>
+                <div id="login-link" class="auth-link">
+                    <a href="login.html">Login</a>
+                </div>
+                <div class="profile-menu" style="display: none;">
+                    <a href="#" id="profile-link" class="profile-link">
+                        <span class="profile-icon">👤</span>
+                        <span class="profile-text">My Profile</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="profile-dropdown">
+                        <li><a href="#" id="edit-profile-link">Edit Profile</a></li>
+                        <li><a href="php/mybookings.php">My Bookings</a></li>
+                        <li><a href="#" id="wallet-management-link">💰 Wallet Management</a></li>
+                        <li><a href="#" id="logout-link">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="nav-toggler">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+    </nav>
+
+    <!-- Booking Section (Refactored to match index.html) -->
+    <section id="booking" class="booking">
+        <div class="container">
+            <h2>Book Your Travel</h2>
+            <!-- Booking Steps Indicator -->
+            <div class="booking-steps" style="display: flex; justify-content: center; margin-bottom: 30px; gap: 20px;">
+                <div class="step active" id="step-1">
+                    <div class="step-number">1</div>
+                    <span>Travel Details</span>
+                </div>
+                <div class="step" id="step-2">
+                    <div class="step-number">2</div>
+                    <span>Email Verification</span>
+                </div>
+                <div class="step" id="step-3">
+                    <div class="step-number">3</div>
+                    <span>Traveler Details</span>
+                </div>
+                <div class="step" id="step-4">
+                    <div class="step-number">4</div>
+                    <span>Payment</span>
+                </div>
+        </div>
+        <!-- Step 1: Basic Travel Details -->
+            <div class="booking-step" id="step-1-content">
+                <form class="booking-form" id="booking-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="source">From (Source City):</label>
+                            <input name="source" type="text" id="source" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">To (Destination City):</label>
+                            <input name="destination" type="text" id="destination" required>
+                        </div>
+                    </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Date of Journey:</label>
+                            <input name="date" type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="num_travelers">Number of Travelers:</label>
+                            <input name="num_travelers" type="number" id="num_travelers" min="1" max="10" value="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Get Fares</button>
+            </form>
+            <!-- Fare Options Display -->
+            <div id="fare-options" style="display: none; margin: 30px 0;">
+                <h3 style="color: #0077cc;">Select Your Fare</h3>
+                <div class="fare-cards">
+                    <div class="fare-card">
+                        <h4>Flight</h4>
+                        <div class="fare-price" id="flight-fare">-</div>
+                        <div class="fare-details">Fastest, most comfortable</div>
+                        <button type="button" class="btn select-fare-btn" data-mode="flight">Select Flight</button>
+                    </div>
+                    <div class="fare-card">
+                        <h4>Train</h4>
+                        <div class="fare-price" id="train-fare">-</div>
+                        <div class="fare-details">Economical, scenic routes</div>
+                        <button type="button" class="btn select-fare-btn" data-mode="train">Select Train</button>
+                    </div>
+                    <div class="fare-card">
+                        <h4>Bus</h4>
+                        <div class="fare-price" id="bus-fare">-</div>
+                        <div class="fare-details">Budget-friendly, flexible</div>
+                        <button type="button" class="btn select-fare-btn" data-mode="bus">Select Bus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- Step 2: Email Verification -->
+            <div class="booking-step" id="step-2-content" style="display: none;">
+                <div class="booking-form">
+                    <h3>📧 Email Verification Required</h3>
+                    <p>Please provide your contact details and verify your email to proceed with the booking.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact-name">Full Name:</label>
+                            <input type="text" id="contact-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-mobile">Mobile Number:</label>
+                            <input type="tel" id="contact-mobile" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email Address:</label>
+                        <input type="email" id="contact-email" required>
+                    </div>
+                    <button class="btn btn-warning" id="send-otp-btn">Send OTP</button>
+                    <div class="otp-section" id="main-otp-section" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h4>🔐 Enter OTP</h4>
+                        <p>We've sent a 6-digit OTP to your email address.</p>
+                        <div class="otp-input" style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="0" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="1" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="2" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="3" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="4" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="5" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-warning" id="resend-otp-btn">Resend OTP</button>
+                            <button class="btn btn-success" id="verify-otp-btn">Verify OTP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 3: Traveler Details -->
+            <div class="booking-step" id="step-3-content" style="display: none;">
+                <div class="booking-form">
+                    <h3>👥 Traveler Details</h3>
+                    <p>Please provide details for all travelers.</p>
+                    <div id="main-traveler-fields"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn btn-primary" id="proceed-to-payment-btn">Proceed to Payment</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 4: Payment -->
+            <div class="booking-step" id="step-4-content" style="display: none;">
+                <div class="booking-form">
+                    <h3>💳 Payment Summary</h3>
+                    <div id="main-payment-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;"></div>
+                    <div style="text-align: center;">
+                        <button class="btn btn-success" id="payment-btn">Pay ₹1 (Test Payment)</button>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">Original amount will be shown on ticket, only ₹1 will be charged for testing.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="booking-result"></div>
+        </div>
+    </section>
+
+    <!-- Login Required Modal -->
+    <div id="login-required-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; text-align: center;">
+            <h3 style="color: #0077cc; margin-bottom: 20px;">Login Required</h3>
+            <p style="margin-bottom: 20px;">You need to be logged in to make a booking. Please login or register first.</p>
+            <button id="close-login-required-modal" class="btn" style="background: #0077cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Modular Booking Logic (adapted from index.html) ---
+
+        // Booking Data
+        let mainBookingData = {
+            source: '',
+            destination: '',
+            date: '',
+            num_travelers: 1,
+            selected_mode: '',
+            selected_fare: 0,
+            contact_name: '',
+            contact_mobile: '',
+            contact_email: '',
+            travelers: [],
+            otp_verified: false
+        };
+        let mainCurrentStep = 1;
+
+        // Step Transitions
+        function showMainStep(step) {
+            document.querySelectorAll('.booking-step').forEach(s => s.style.display = 'none');
+            const stepElement = document.getElementById(`step-${step}-content`);
+            if (stepElement) stepElement.style.display = 'block';
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'completed'));
+            for (let i = 1; i <= step; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                if (stepEl) {
+                    if (i < step) stepEl.classList.add('completed');
+                    else if (i === step) stepEl.classList.add('active');
+                }
+            }
+            mainCurrentStep = step;
+        }
+
+        // Step 1: Get Fares
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Validate fields
+                const source = document.getElementById('source').value.trim();
+                const destination = document.getElementById('destination').value.trim();
+                const numTravelers = parseInt(document.getElementById('num_travelers').value);
+                const date = document.getElementById('date').value;
+                if (!source || !destination || !numTravelers || !date) {
+                    showMainAlert('Please fill in all required fields', 'danger');
+                    return;
+                }
+                if (source.toLowerCase() === destination.toLowerCase()) {
+                    showMainAlert('Source and destination cannot be the same', 'danger');
+                    return;
+                }
+                const selectedDate = new Date(date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (selectedDate < today) {
+                    showMainAlert('Cannot book for past dates', 'danger');
+                    return;
+                }
+                // Store booking data
+                mainBookingData.source = source;
+                mainBookingData.destination = destination;
+                mainBookingData.date = date;
+                mainBookingData.num_travelers = numTravelers;
+                // Calculate fares
+                const isInternational = ['paris', 'london', 'new_york', 'tokyo', 'dubai', 'singapore', 'bangkok', 'bali'].includes(destination.toLowerCase());
+                const baseFares = {
+                    flight: isInternational ? 25000 : 3000,
+                    train: isInternational ? 0 : 800,
+                    bus: isInternational ? 0 : 500
+                };
+                document.getElementById('flight-fare').textContent = (baseFares.flight * numTravelers).toLocaleString();
+                document.getElementById('train-fare').textContent = isInternational ? 'N/A' : (baseFares.train * numTravelers).toLocaleString();
+                document.getElementById('bus-fare').textContent = isInternational ? 'N/A' : (baseFares.bus * numTravelers).toLocaleString();
+                document.getElementById('fare-options').style.display = 'block';
+                document.querySelectorAll('.select-fare-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        const mode = this.dataset.mode;
+                        const fareText = this.closest('.fare-card').querySelector('.fare-price').textContent;
+                        const fare = parseInt(fareText.replace(/[^\d]/g, ''));
+                        mainBookingData.selected_mode = mode;
+                        mainBookingData.selected_fare = fare;
+                        showMainStep(2);
+                        document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+                    };
+                });
+            });
+        }
+
+        // Step 2: Email Verification
+        function isValidEmail(email) {
+            return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+        }
+        function isValidMobile(mobile) {
+            return /^\d{10}$/.test(mobile);
+        }
+        function showMainAlert(msg, type) {
+            let alertBox = document.getElementById('main-alert');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.id = 'main-alert';
+                alertBox.style = 'margin: 10px 0; padding: 10px; border-radius: 6px; text-align: center;';
+                document.getElementById('booking').prepend(alertBox);
+            }
+            alertBox.textContent = msg;
+            alertBox.style.background = type === 'danger' ? '#f8d7da' : '#d4edda';
+            alertBox.style.color = type === 'danger' ? '#721c24' : '#155724';
+            setTimeout(() => { alertBox.remove(); }, 3000);
+        }
+        document.getElementById('send-otp-btn').onclick = sendMainOTP;
+        document.getElementById('verify-otp-btn').onclick = verifyMainOTP;
+        document.getElementById('resend-otp-btn').onclick = resendMainOTP;
+
+        async function sendMainOTP() {
+            const contactName = document.getElementById('contact-name').value.trim();
+            const contactMobile = document.getElementById('contact-mobile').value.trim();
+            const contactEmail = document.getElementById('contact-email').value.trim();
+            if (!contactName || !contactMobile || !contactEmail) {
+                showMainAlert('Please fill in all contact details', 'danger');
+                return;
+            }
+            if (!isValidEmail(contactEmail)) {
+                showMainAlert('Please enter a valid email address', 'danger');
+                return;
+            }
+            if (!isValidMobile(contactMobile)) {
+                showMainAlert('Please enter a valid 10-digit mobile number', 'danger');
+                return;
+            }
+            mainBookingData.contact_name = contactName;
+            mainBookingData.contact_mobile = contactMobile;
+            mainBookingData.contact_email = contactEmail;
+            try {
+                const response = await fetch('php/send_booking_otp.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: contactEmail, mobile: contactMobile, name: contactName })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    showMainAlert('OTP sent successfully to your email', 'success');
+                    document.getElementById('main-otp-section').style.display = 'block';
+                    initializeMainOTPInputs();
+                } else {
+                    showMainAlert(data.message || 'Failed to send OTP', 'danger');
+                }
+            } catch (error) {
+                showMainAlert('Failed to send OTP. Please try again.', 'danger');
+            }
+        }
+        async function verifyMainOTP() {
+            const otpInputs = document.querySelectorAll('.main-otp-digit');
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            if (otp.length !== 6) {
+                showMainAlert('Please enter the complete 6-digit OTP', 'danger');
+                return;
+            }
+            try {
+                const response = await fetch('php/verify_booking_otp.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: mainBookingData.contact_email, otp: otp })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    mainBookingData.otp_verified = true;
+                    showMainAlert('Email verified successfully!', 'success');
+                    setTimeout(() => { showMainStep(3); updateMainTravelerForms(); }, 1000);
+                } else {
+                    showMainAlert(data.message || 'Invalid OTP', 'danger');
+                }
+            } catch (error) {
+                showMainAlert('Failed to verify OTP. Please try again.', 'danger');
+            }
+        }
+        async function resendMainOTP() { await sendMainOTP(); }
+        function initializeMainOTPInputs() {
+            const otpInputs = document.querySelectorAll('.main-otp-digit');
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    if (e.target.value.length === 1 && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) otpInputs[index - 1].focus();
+                });
+            });
+        }
+
+        // Step 3: Traveler Details
+        function updateMainTravelerForms() {
+            const container = document.getElementById('main-traveler-fields');
+            const numTravelers = mainBookingData.num_travelers;
+            container.innerHTML = '';
+            for (let i = 0; i < numTravelers; i++) {
+                container.innerHTML += `
+                    <div class="traveler-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e9ecef;">
+                        <h4 style="color: #0077cc; margin-bottom: 15px;">Traveler ${i + 1}</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name:</label>
+                                <input type="text" class="traveler-name" data-index="${i}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Age:</label>
+                                <input type="number" class="traveler-age" data-index="${i}" min="1" max="120" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Gender:</label>
+                                <select class="traveler-gender" data-index="${i}" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        document.getElementById('proceed-to-payment-btn').onclick = proceedToMainPayment;
+        function proceedToMainPayment() {
+            const travelers = [];
+            const travelerCards = document.querySelectorAll('.traveler-card');
+            for (let i = 0; i < travelerCards.length; i++) {
+                const card = travelerCards[i];
+                const name = card.querySelector('.traveler-name').value.trim();
+                const age = card.querySelector('.traveler-age').value;
+                const gender = card.querySelector('.traveler-gender').value;
+                if (!name || !age || !gender) {
+                    showMainAlert(`Please fill all details for Traveler ${i + 1}`, 'danger');
+                    return;
+                }
+                travelers.push({ name, age, gender });
+            }
+            mainBookingData.travelers = travelers;
+            showMainPaymentSummary();
+            showMainStep(4);
+        }
+        function showMainPaymentSummary() {
+            const summary = document.getElementById('main-payment-summary');
+            const totalAmount = mainBookingData.selected_fare;
+            fetch('php/session_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    const walletBalance = parseFloat(data.wallet_balance) || 0;
+                    const requiredDemoAmount = 1;
+                    const canPayWithWallet = walletBalance >= requiredDemoAmount;
+                    summary.innerHTML = `
+                        <h4>Booking Summary</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div><strong>From:</strong> ${mainBookingData.source}</div>
+                            <div><strong>To:</strong> ${mainBookingData.destination}</div>
+                            <div><strong>Date:</strong> ${mainBookingData.date}</div>
+                            <div><strong>Mode:</strong> ${mainBookingData.selected_mode.toUpperCase()}</div>
+                            <div><strong>Travelers:</strong> ${mainBookingData.num_travelers}</div>
+                            <div><strong>Contact:</strong> ${mainBookingData.contact_name}</div>
+                        </div>
+                        <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196f3;">
+                            <h5 style="margin: 0 0 10px 0; color: #1976d2;">💰 Wallet Information</h5>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span><strong>Current Balance:</strong> ₹${walletBalance.toLocaleString()}</span>
+                                <span style="color: ${canPayWithWallet ? '#4caf50' : '#f44336'}; font-weight: bold;">
+                                    ${canPayWithWallet ? '✅ Sufficient Balance' : '❌ Insufficient Balance'}
+                                </span>
+                            </div>
+                            ${!canPayWithWallet ? `<div style="margin-top: 8px; color: #f44336; font-size: 14px;"><strong>Shortfall:</strong> ₹1 (will be added to wallet)</div>` : ''}
+                        </div>
+                        <div style="border-top: 2px solid #ddd; padding-top: 15px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;">
+                                <span>Total Amount:</span>
+                                <span>₹${totalAmount.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div style="font-size: 14px; color: #666; margin-top: 5px;">
+                                ${canPayWithWallet ? 'Payment will be deducted from your wallet (Demo/Test: Only ₹1 will be charged)' : 'Amount will be added to your wallet first, then deducted for booking (Demo/Test: Only ₹1 will be charged)'}
+                            </div>
+                        </div>
+                    `;
+                    const paymentBtn = document.getElementById('payment-btn');
+                    if (paymentBtn) {
+                        if (canPayWithWallet) {
+                            paymentBtn.textContent = `Pay ₹1 (Wallet)`;
+                            paymentBtn.className = 'btn btn-success';
+                        } else {
+                            paymentBtn.textContent = `Add ₹1 to Wallet (Demo/Test Payment)`;
+                            paymentBtn.className = 'btn btn-warning';
+                        }
+                    }
+                })
+                .catch(error => {
+                    summary.innerHTML = `<h4>Booking Summary</h4><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;"><div><strong>From:</strong> ${mainBookingData.source}</div><div><strong>To:</strong> ${mainBookingData.destination}</div><div><strong>Date:</strong> ${mainBookingData.date}</div><div><strong>Mode:</strong> ${mainBookingData.selected_mode.toUpperCase()}</div><div><strong>Travelers:</strong> ${mainBookingData.num_travelers}</div><div><strong>Contact:</strong> ${mainBookingData.contact_name}</div></div><div style="border-top: 2px solid #ddd; padding-top: 15px; margin-top: 15px;"><div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;"><span>Total Amount:</span><span>₹${totalAmount.toLocaleString()}</span></div></div>`;
+                    const paymentBtn = document.getElementById('payment-btn');
+                    if (paymentBtn) {
+                        paymentBtn.textContent = `Pay ₹${totalAmount.toLocaleString()} (Wallet)`;
+                        paymentBtn.className = 'btn btn-success';
+                    }
+                });
+        }
+        document.getElementById('payment-btn').onclick = processMainPayment;
+        async function processMainPayment() {
+            // Always charge ₹1 for demo/test
+            const requiredDemoAmount = 1;
+            // Check wallet balance
+            const sessionRes = await fetch('php/session_status.php');
+            const sessionData = await sessionRes.json();
+            const walletBalance = parseFloat(sessionData.wallet_balance) || 0;
+            if (walletBalance >= requiredDemoAmount) {
+                await processWalletPayment();
+            } else {
+                await processWalletTopUp(requiredDemoAmount);
+            }
+        }
+        async function processWalletPayment() {
+            try {
+                const response = await fetch('php/process_wallet_booking.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ booking_data: mainBookingData })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    showMainAlert('Booking completed successfully using wallet!', 'success');
+                    updateWalletBalanceDisplay();
+                    // Show ticket modal
+                    showTicketPreviewModal(mainBookingData, data.booking_id, mainBookingData.selected_fare);
+                    resetMainBookingForm();
+                } else {
+                    showMainAlert(data.message || 'Booking failed', 'danger');
+                    updateWalletBalanceDisplay();
+                }
+            } catch (error) {
+                showMainAlert('Failed to process wallet payment', 'danger');
+            }
+        }
+        async function processWalletTopUp(requiredAmount) {
+            try {
+                const sessionResponse = await fetch('php/session_status.php');
+                const sessionData = await sessionResponse.json();
+                const currentBalance = parseFloat(sessionData.wallet_balance) || 0;
+                const shortfall = 1;
+                const orderResponse = await fetch('php/create_wallet_order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: shortfall })
+                });
+                const orderData = await orderResponse.json();
+                if (orderData.status === 'success') {
+                    const options = {
+                        key: orderData.key_id,
+                        amount: orderData.amount * 100,
+                        currency: 'INR',
+                        name: 'TravelPlanner',
+                        description: `Wallet Top-up for booking (Demo/Test Payment: ₹1)`,
+                        order_id: orderData.order_id,
+                        handler: function(response) { verifyWalletTopUp(response, requiredAmount); },
+                        prefill: {
+                            name: mainBookingData.contact_name,
+                            email: mainBookingData.contact_email,
+                            contact: mainBookingData.contact_mobile
+                        },
+                        theme: { color: '#0077cc' }
+                    };
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                    showMainAlert('Please complete the wallet top-up of ₹1 (Demo/Test Payment) to proceed with your booking.', 'info');
+                } else {
+                    showMainAlert('Failed to create wallet top-up order: ' + (orderData.message || 'Unknown error'), 'danger');
+                }
+            } catch (error) {
+                showMainAlert('Failed to create wallet top-up order', 'danger');
+            }
+        }
+        async function verifyWalletTopUp(response, requiredAmount) {
+            try {
+                const verifyResponse = await fetch('php/verify_wallet_payment.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                });
+                const verifyData = await verifyResponse.json();
+                if (verifyData.status === 'success') {
+                    showMainAlert(`Wallet credited with ₹${verifyData.amount_added}! New balance: ₹${verifyData.new_balance}`, 'success');
+                    updateWalletBalanceDisplay();
+                    setTimeout(() => { processWalletPayment(); }, 1500);
+                } else {
+                    showMainAlert('Wallet top-up failed: ' + verifyData.message, 'danger');
+                    updateWalletBalanceDisplay();
+                }
+            } catch (error) {
+                showMainAlert('Failed to verify wallet top-up', 'danger');
+            }
+        }
+        async function updateWalletBalanceDisplay() {
+            try {
+                const response = await fetch('php/session_status.php');
+                const data = await response.json();
+                if (data.logged_in) {
+                    const walletBalance = parseFloat(data.wallet_balance) || 0;
+                    let walletDisplay = document.getElementById('wallet-balance-display');
+                    if (!walletDisplay) {
+                        walletDisplay = document.createElement('div');
+                        walletDisplay.id = 'wallet-balance-display';
+                        walletDisplay.style.cssText = 'background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 14px; margin-right: 15px; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);';
+                        const navAuth = document.querySelector('.nav-auth');
+                        if (navAuth) navAuth.insertBefore(walletDisplay, navAuth.firstChild);
+                    }
+                    walletDisplay.innerHTML = `💰 ₹${walletBalance.toLocaleString()}`;
+                }
+            } catch (error) { }
+        }
+        function resetMainBookingForm() {
+            document.getElementById('booking-form').reset();
+            document.getElementById('fare-options').style.display = 'none';
+            document.getElementById('main-traveler-fields').innerHTML = '';
+            document.getElementById('main-payment-summary').innerHTML = '';
+            document.getElementById('booking-result').innerHTML = '';
+            showMainStep(1);
+        }
+
+        // --- Finalized Ticket Modal and Actions (copied/adapted from index.html) ---
+        function showTicketPreviewModal(bookingData, bookingId, totalAmount) {
+            // Remove any existing modal
+            const oldModal = document.getElementById('ticket-preview-modal');
+            if (oldModal) oldModal.remove();
+
+            // Generate ticket HTML
+            const ticketHtml = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'ticket-preview-modal';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;`;
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 15px; max-width: 900px; width: 95vw; max-height: 95vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <button id="close-ticket-modal" style="position: absolute; top: 15px; right: 20px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; cursor: pointer;">&times;</button>
+                    <div id="ticket-preview-content">${ticketHtml}</div>
+                    <div style="display: flex; justify-content: center; gap: 15px; margin: 30px 0 20px 0;">
+                        <button class="btn" style="background: #28a745; color: white;" onclick='downloadTicketHtml(mainBookingData, "${bookingId}", ${totalAmount})'>Download Ticket</button>
+                        <button class="btn" style="background: #0077cc; color: white;" onclick='printTicketHtml(mainBookingData, "${bookingId}", ${totalAmount})'>Print Ticket</button>
+                        <button class="btn" style="background: #ffc107; color: #212529;" onclick='sendTicketEmail(mainBookingData, "${bookingId}", ${totalAmount})'>Send to Email</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('close-ticket-modal').onclick = () => modal.remove();
+        }
+
+        function generateSimpleTicketHtml(bookingData, bookingId, totalAmount) {
+            // ... (copy the finalized ticket HTML generator from index.html or test_simple_ticket.html) ...
+            // For brevity, you can use the same function as in index.html
+            // (If you want the full code pasted here, let me know!)
+            return `
+                <div class="ticket">
+                    <div class="header" style="background: linear-gradient(135deg, #0077cc, #2193b0); color: white; padding: 30px; text-align: center;">
+                        <h1>TravelPlanner</h1>
+                        <p>Official Travel Ticket</p>
+                        <div style="margin-top: 15px;"><span class="status-badge" style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">CONFIRMED</span></div>
+                    </div>
+                    <div class="body" style="padding: 30px;">
+                        <div class="payment">
+                            <h3>Payment Confirmed</h3>
+                            <div><strong>Booking ID:</strong> ${bookingId}</div>
+                            <div><strong>Amount Paid:</strong> ₹1 (Test Payment)</div>
+                            <div><strong>Original Amount:</strong> ₹${totalAmount.toLocaleString()}</div>
+                            <div><strong>Booking Date:</strong> ${new Date().toLocaleString()}</div>
+                        </div>
+                        <div class="flight-details">
+                            <h3>Flight/Transport Details</h3>
+                            <div><strong>From:</strong> ${bookingData.source}</div>
+                            <div><strong>To:</strong> ${bookingData.destination}</div>
+                            <div><strong>Date:</strong> ${bookingData.date}</div>
+                            <div><strong>Mode:</strong> ${(bookingData.selected_mode || '').toUpperCase()}</div>
+                        </div>
+                        <div class="section">
+                            <h3>Traveler Information</h3>
+                            <table class="traveler-table" style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                                <tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th></tr>
+                                ${(bookingData.travelers || []).map((traveler, i) => `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>${traveler.name}</td>
+                                        <td>${traveler.age}</td>
+                                        <td>${traveler.gender}</td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+                        <div class="section">
+                            <h3>Contact Information</h3>
+                            <div><strong>Name:</strong> ${bookingData.contact_name}</div>
+                            <div><strong>Mobile:</strong> ${bookingData.contact_mobile}</div>
+                            <div><strong>Email:</strong> ${bookingData.contact_email}</div>
+                        </div>
+                        <div class="section">
+                            <h3>Customer Support</h3>
+                            <div><strong>Helpline:</strong> +91 9130123270</div>
+                            <div><strong>Email:</strong> sarveshtravelplanner@gmail.com</div>
+                            <div><strong>WhatsApp:</strong> +91 9130123270</div>
+                        </div>
+                        <div class="footer" style="background: #333; color: white; padding: 20px; text-align: center;">
+                            <p><strong>Thank you for choosing TravelPlanner!</strong></p>
+                            <p>Have a safe and enjoyable journey</p>
+                            <p>Generated on: ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadTicketHtml(bookingData, bookingId, totalAmount) {
+            const html = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TravelPlanner_Ticket_${bookingId}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function printTicketHtml(bookingData, bookingId, totalAmount) {
+            const html = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+
+        function sendTicketEmail(bookingData, bookingId, totalAmount) {
+            // Use the verified email by default
+            let emailTo = bookingData.contact_email || '';
+            let promptMsg = 'Enter the email address to send the ticket to:';
+            if (emailTo) {
+                promptMsg = `Send ticket to this email? (Edit if you want to send to a different address)\n${emailTo}`;
+            }
+            const userInput = prompt(promptMsg, emailTo);
+            if (!userInput || !/^\S+@\S+\.\S+$/.test(userInput)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            fetch('php/send_ticket_email.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookingData, bookingId, totalAmount, emailTo: userInput })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Ticket sent successfully!');
+                } else {
+                    alert('Failed to send ticket: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(() => {
+                alert('Failed to send ticket. Please try again.');
+            });
+        }
+    </script>
+    
+    <!-- Include authentication script -->
+    <script src="script.js"></script>
+</body>
+</html>

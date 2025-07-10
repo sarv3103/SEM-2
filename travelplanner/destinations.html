@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .destinations-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+        
+        .destinations-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .destinations-header h1 {
+            color: #0077cc;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destinations-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #0077cc;
+            border-radius: 25px;
+            background: transparent;
+            color: #0077cc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .category-tab.active,
+        .category-tab:hover {
+            background: #0077cc;
+            color: white;
+        }
+        
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .destination-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .destination-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .destination-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,119,204,0.8), rgba(33,147,176,0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .destination-card:hover .destination-overlay {
+            opacity: 1;
+        }
+        
+        .overlay-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        
+        .overlay-content h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .overlay-content p {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .category-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .explore-btn {
+            background: white;
+            color: #0077cc;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .explore-btn:hover {
+            background: #0077cc;
+            color: white;
+        }
+        
+        .destination-info {
+            padding: 1.5rem;
+        }
+        
+        .destination-info h3 {
+            color: #0077cc;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .destination-location {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-features {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-tag {
+            background: #e3f2fd;
+            color: #0077cc;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .destination-price {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .destination-actions {
+            display: flex !important;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-explore, .btn-book {
+            background: #0077cc;
+            color: white !important;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            flex: 1;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: block !important;
+        }
+        
+        .btn-explore:hover {
+            background: #2193b0;
+        }
+        
+        .btn-book {
+            background: #28a745;
+        }
+        
+        .btn-book:hover {
+            background: #185a9d;
+        }
+        
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e0eafc;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-bar input:focus {
+            border-color: #0077cc;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .destinations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-tab {
+                width: 200px;
+                text-align: center;
+            }
+        }
+
+        /* Modal Styles */
+        .destination-modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            color: #333;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .destination-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-image {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .detail-info {
+            padding: 30px;
+        }
+
+        .detail-info h2 {
+            color: #185a9d;
+            margin-bottom: 10px;
+        }
+
+        .detail-info .location {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .detail-info .description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .detail-info .features {
+            margin-bottom: 20px;
+        }
+
+        .detail-info .features h4 {
+            color: #43cea2;
+            margin-bottom: 10px;
+        }
+
+        .detail-info .price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #185a9d;
+            margin-bottom: 20px;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .detail-actions .btn-book {
+            flex: 1;
+        }
+
+        .detail-actions .btn-close {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .detail-actions .btn-close:hover {
+            background: #555;
+        }
+
+        /* Destination meta information */
+        .destination-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .meta-item strong {
+            color: #0077cc;
+        }
+
+        /* Highlights, included, excluded sections */
+        .highlights, .included, .excluded, .itinerary {
+            margin-bottom: 20px;
+        }
+
+        .highlights h4, .included h4, .excluded h4, .itinerary h4 {
+            color: #0077cc;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .highlights ul, .included ul, .excluded ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .highlights li, .included li, .excluded li {
+            background: #f8f9fa;
+            padding: 6px 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            border-left: 3px solid #0077cc;
+        }
+
+        .itinerary p {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            line-height: 1.6;
+            border-left: 3px solid #28a745;
+        }
+
+        /* Button styles for overlay */
+        .destination-actions-overlay {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-explore-overlay, .btn-book-overlay {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-explore-overlay {
+            background: rgba(255,255,255,0.9);
+            color: #185a9d;
+        }
+
+        .btn-book-overlay {
+            background: #185a9d;
+            color: white;
+        }
+
+        .btn-explore-overlay:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-book-overlay:hover {
+            background: #43cea2;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .detail-info {
+                padding: 20px;
+            }
+            
+            .detail-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html" class="active">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="booking.html">Booking</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+
+
+         
+        <div class="nav-auth">
+            <div id="welcome-user" class="welcome-user"></div>
+            <div id="login-link" class="auth-link">
+                <a href="login.html">Login</a>
+            </div>
+            <div class="profile-menu" style="display: none;">
+                <a href="#" id="profile-link" class="profile-link">
+                    <span class="profile-icon">👤</span>
+                    <span class="profile-text">My Profile</span>
+                    <span class="dropdown-arrow">▼</span>
+                </a>
+                <ul class="profile-dropdown">
+                    <li><a href="#" id="edit-profile-link">Edit Profile</a></li>
+                    <li><a href="php/mybookings.php">My Bookings</a></li>
+                    <li><a href="#" id="wallet-management-link">💰 Wallet Management</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="nav-toggler">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="destinations-container">
+        <div class="destinations-header">
+            <div>
+            <h1>Explore Amazing Destinations</h1>
+            <p>Discover the world's most beautiful places and plan your next adventure</p>
+        </div>
+
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search destinations...">
+        </div>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All Destinations</button>
+            <button class="category-tab" data-category="beach">Beach Getaways</button>
+            <button class="category-tab" data-category="mountain">Mountain Adventures</button>
+            <button class="category-tab" data-category="city">City Breaks</button>
+            <button class="category-tab" data-category="culture">Cultural Heritage</button>
+            <button class="category-tab" data-category="wildlife">Wildlife & Nature</button>
+        </div>
+
+        <div class="destinations-grid" id="destinations-grid">
+            <!-- Destinations will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Login Required Modal -->
+    <div id="login-required-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; text-align: center;">
+            <h3 style="color: #0077cc; margin-bottom: 20px;">Login Required</h3>
+            <p style="margin-bottom: 20px;">Please login first or register first.</p>
+            <button id="close-login-required-modal" class="btn" style="background: #0077cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let destinations = [];
+        let currentCategory = 'all';
+        let currentSearch = '';
+
+        // Fetch destinations from API
+        async function fetchDestinations(category = 'all', search = '') {
+            try {
+                const params = new URLSearchParams({
+                    category: category,
+                    search: search,
+                    limit: 50
+                });
+                
+                const response = await fetch(`php/get_destinations.php?${params}`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    destinations = data.data;
+                    renderDestinations();
+                } else {
+                    console.error('Failed to fetch destinations:', data.message);
+                    // Fallback to sample data if API fails
+                    loadSampleData();
+                }
+            } catch (error) {
+                console.error('Error fetching destinations:', error);
+                // Fallback to sample data if API fails
+                loadSampleData();
+            }
+        }
+
+        // Fallback sample data
+        function loadSampleData() {
+            destinations = [
+                {
+                    id: 1,
+                    name: "Goa",
+                    location: "India",
+                    description: "Famous for its pristine beaches, vibrant nightlife, and Portuguese heritage. Perfect for beach lovers and party enthusiasts.",
+                    image: "https://th.bing.com/th/id/OIP.OsdnDjdW74sn01vHghKvOwHaFj?w=221&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                    category: "beach",
+                    features: ["Beaches", "Nightlife", "Heritage"],
+                    price_range: "From ₹15,000"
+                },
+                {
+                    id: 2,
+                    name: "Kerala",
+                    location: "India",
+                    description: "God's Own Country with serene backwaters, lush tea gardens, and Ayurvedic wellness retreats.",
+                    image: "https://th.bing.com/th/id/OIP.KX8jyV-N7KMbHfH6V64vwQHaDk?w=337&h=168&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                    category: "culture",
+                    features: ["Backwaters", "Ayurveda", "Tea Gardens"],
+                    price_range: "From ₹18,000"
+                },
+                {
+                    id: 3,
+                    name: "Ladakh",
+                    location: "India",
+                    description: "High-altitude desert with stunning landscapes, ancient monasteries, and adventure activities.",
+                    image: "https://th.bing.com/th/id/OIP.kaN4VnvSSguxcYILikQ71wHaEj?w=280&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                    category: "mountain",
+                    features: ["Mountains", "Monasteries", "Adventure"],
+                    price_range: "From ₹25,000"
+                }
+            ];
+            renderDestinations();
+        }
+
+        // Render destinations
+        function renderDestinations() {
+            const grid = document.getElementById('destinations-grid');
+            
+            grid.innerHTML = destinations.map(dest => {
+                // Use image_url field from database, fallback to a default image
+                const imageUrl = dest.image_url || 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(dest.name);
+                
+                return `
+                    <div class="destination-card" data-category="${dest.category || 'destination'}">
+                        <div class="destination-image" style="background-image: url('${imageUrl}')">
+                            <div class="destination-overlay">
+                                <div class="overlay-content">
+                                    <h4>${dest.name}</h4>
+                                    <p>${dest.location || 'India'}</p>
+                                    <span class="category-badge">${dest.category || 'Destination'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="destination-info">
+                            <h3>${dest.name}</h3>
+                            <div class="destination-location">📍 ${dest.location || 'India'}</div>
+                            <div class="destination-description">${dest.description || 'Amazing destination with unique experiences.'}</div>
+                            <div class="destination-features">
+                                ${dest.features && dest.features.length > 0 ? 
+                                    dest.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('') : 
+                                    '<span class="feature-tag">Amazing Destination</span>'
+                                }
+                            </div>
+                            <div class="destination-price">${dest.price_range || dest.price || 'From ₹15,000'}</div>
+                            <div class="destination-actions">
+                                <button class="btn-explore" onclick="showDestinationDetails(${dest.id})">View Details</button>
+                                <button class="btn-book" onclick="goToBooking('${dest.name}')">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show destination details in a modal
+        async function showDestinationDetails(destinationId) {
+            try {
+                const response = await fetch(`php/get_destination.php?id=${destinationId}`);
+                const data = await response.json();
+                
+                if (data.status !== 'success') {
+                    alert('Destination not found!');
+                    return;
+                }
+                
+                const dest = data.data;
+                showDestinationModal(dest);
+            } catch (error) {
+                console.error('Error fetching destination details:', error);
+                alert('Failed to load destination details. Please try again.');
+            }
+        }
+
+        // Show destination modal with detailed information
+        function showDestinationModal(dest) {
+            const modal = document.createElement('div');
+            modal.className = 'destination-modal';
+            modal.style.cssText = `
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            // Helper function to render array items
+            const renderArrayItems = (items, className = 'info-tag') => {
+                if (!items || !Array.isArray(items) || items.length === 0) {
+                    return '<p>Information not available</p>';
+                }
+                return items.map(item => `<span class="${className}">${item}</span>`).join('');
+            };
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 12px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+                    <span style="position: absolute; right: 20px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; z-index: 1001; color: #333; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" onclick="this.closest('.destination-modal').remove()">&times;</span>
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="height: 300px; background-size: cover; background-position: center; border-radius: 12px 12px 0 0; background-image: url('${dest.image_url || 'https://via.placeholder.com/900x300?text=' + encodeURIComponent(dest.name)}')"></div>
+                        <div style="padding: 30px;">
+                            <h2 style="color: #185a9d; margin-bottom: 10px;">${dest.name}</h2>
+                            <p style="color: #666; margin-bottom: 15px;">📍 ${dest.location}</p>
+                            <p style="line-height: 1.6; margin-bottom: 20px;">${dest.description}</p>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #0077cc; margin-bottom: 10px;">📅 Best Time to Visit</h4>
+                                    <p>${dest.best_time || 'Year-round'}</p>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #0077cc; margin-bottom: 10px;">⏱️ Recommended Duration</h4>
+                                    <p>${dest.duration || '5-7 days'}</p>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #0077cc; margin-bottom: 10px;">🏃 Difficulty Level</h4>
+                                    <p>${dest.difficulty || 'Easy'}</p>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #0077cc; margin-bottom: 10px;">💰 Price Range</h4>
+                                    <p>${dest.price_range || dest.price || 'From ₹15,000'}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #28a745; margin-bottom: 15px;">🎯 Why Visit ${dest.name}?</h4>
+                                <p style="line-height: 1.6; color: #555;">${dest.why_visit || 'This destination offers unique experiences and beautiful landscapes.'}</p>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #ff6b35; margin-bottom: 15px;">🌟 Popular For</h4>
+                                <p style="line-height: 1.6; color: #555;">${dest.popular_for || 'Tourism, sightseeing, and cultural experiences.'}</p>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #43cea2; margin-bottom: 15px;">🏛️ Local Sights & Attractions</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${renderArrayItems(dest.local_sights, 'sight-tag')}
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #667eea; margin-bottom: 15px;">🗺️ Popular Places to Visit</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${renderArrayItems(dest.popular_places, 'place-tag')}
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #e74c3c; margin-bottom: 15px;">⭐ Key Highlights</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${renderArrayItems(dest.highlights, 'highlight-tag')}
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #9b59b6; margin-bottom: 15px;">🏷️ Features</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${renderArrayItems(dest.features, 'feature-tag')}
+                                </div>
+                            </div>
+                            
+                            <div style="font-size: 1.5em; font-weight: bold; color: #185a9d; margin-bottom: 20px; text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                                ${dest.price_range || dest.price || 'From ₹15,000'}
+                            </div>
+                            
+                            <div style="display: flex; gap: 15px;">
+                                <button style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1;" onclick="goToBooking('${dest.name}')">Book This Destination</button>
+                                <button style="background: #666; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;" onclick="this.closest('.destination-modal').remove()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            modal.onclick = function(e) {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        // Go to booking with destination pre-filled
+        async function goToBooking(destinationName) {
+            // Check if user is logged in
+            try {
+                const response = await fetch('php/session_status.php');
+                const data = await response.json();
+                
+                if (!data.logged_in) {
+                    // Show modal instead of redirect
+                    const modal = document.getElementById('login-required-modal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        document.getElementById('close-login-required-modal').onclick = function() {
+                            modal.style.display = 'none';
+                        };
+                        // Also update the modal message
+                        const msg = modal.querySelector('p');
+                        if (msg) msg.textContent = 'Please login first or register first.';
+                    } else {
+                        alert('Please login first or register first.');
+                    }
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                // Show modal instead of redirect
+                const modal = document.getElementById('login-required-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('close-login-required-modal').onclick = function() {
+                        modal.style.display = 'none';
+                    };
+                    // Also update the modal message
+                    const msg = modal.querySelector('p');
+                    if (msg) msg.textContent = 'Please login first or register first.';
+                } else {
+                    alert('Please login first or register first.');
+                }
+                return;
+            }
+            
+            // Redirect to new package booking page with destination parameters
+            window.location.href = `package_booking.html?type=destination&name=${encodeURIComponent(destinationName)}`;
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const category = tab.dataset.category;
+                currentCategory = category;
+                fetchDestinations(category, currentSearch);
+            });
+        });
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            currentSearch = searchTerm;
+            fetchDestinations(currentCategory, searchTerm);
+        });
+
+        // Initialize
+        fetchDestinations();
+    </script>
+    
+    <!-- Include authentication script -->
+    <script src="script.js"></script>
+</body>
+</html>

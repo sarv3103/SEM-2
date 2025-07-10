@@ -1,0 +1,10 @@
+You can safely delete these files if you are not using separate pages for each section:
+- booking.html
+- contact.html
+- destinations.html
+- gallery.html
+- home.html
+- packages.html
+- tours.html
+
+Your main navigation and all sections are now handled in index.html. Only keep details.php for pop-up details windows.

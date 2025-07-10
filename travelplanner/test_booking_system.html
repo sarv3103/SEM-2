@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Booking System - TravelPlanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 TravelPlanner Booking System Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test OTP Sending</h2>
+        <input type="email" id="test-email" placeholder="Enter email" value="test@example.com">
+        <input type="tel" id="test-mobile" placeholder="Enter mobile" value="9876543210">
+        <button class="test-button" onclick="testSendOTP()">Send OTP</button>
+        <div id="otp-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test OTP Verification</h2>
+        <input type="text" id="test-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+        <button class="test-button" onclick="testVerifyOTP()">Verify OTP</button>
+        <div id="verify-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Destination Booking</h2>
+        <button class="test-button" onclick="testDestinationBooking()">Test Goa Destination Booking</button>
+        <div id="destination-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Test Package Booking</h2>
+        <button class="test-button" onclick="testPackageBooking()">Test Goa Package Booking</button>
+        <div id="package-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Test Database Connection</h2>
+        <button class="test-button" onclick="testDatabase()">Test Database</button>
+        <div id="database-result"></div>
+    </div>
+
+    <script>
+        async function testSendOTP() {
+            const email = document.getElementById('test-email').value;
+            const mobile = document.getElementById('test-mobile').value;
+            const resultDiv = document.getElementById('otp-result');
+            
+            try {
+                const response = await fetch('php/send_booking_otp.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, mobile })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<div class="result success">✅ ${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testVerifyOTP() {
+            const email = document.getElementById('test-email').value;
+            const otp = document.getElementById('test-otp').value;
+            const resultDiv = document.getElementById('verify-result');
+            
+            try {
+                const response = await fetch('php/verify_booking_otp.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<div class="result success">✅ ${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testDestinationBooking() {
+            const resultDiv = document.getElementById('destination-result');
+            
+            try {
+                const response = await fetch('php/get_destination.php?name=Goa');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<div class="result success">✅ Destination loaded: ${data.data.name} - ${data.data.location}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testPackageBooking() {
+            const resultDiv = document.getElementById('package-result');
+            
+            try {
+                const response = await fetch('php/get_package.php?name=Goa Beach Getaway');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<div class="result success">✅ Package loaded: ${data.data.name} - ₹${data.data.price_per_person}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testDatabase() {
+            const resultDiv = document.getElementById('database-result');
+            
+            try {
+                const response = await fetch('php/session_status.php');
+                const data = await response.json();
+                
+                if (data.status === 'success' || data.logged_in !== undefined) {
+                    resultDiv.innerHTML = `<div class="result success">✅ Database connection successful. Login status: ${data.logged_in ? 'Logged in' : 'Not logged in'}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Database connection failed</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html> 

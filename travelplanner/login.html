@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login - TravelPlanner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 3em auto;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0077cc22;
+      padding: 2.5em 2em;
+      font-family: 'Poppins', Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: -40px; right: -40px; bottom: -40px;
+      background: radial-gradient(circle at 80% 20%, #0077cc33 0%, transparent 70%);
+      z-index: 0;
+    }
+    .login-container > * { position: relative; z-index: 1; }
+    .login-container h2 { color: #0077cc; margin-bottom: 1em; font-weight: 700; letter-spacing: 1px; }
+    .login-container input, .login-container button {
+      width: 100%;
+      padding: 0.8em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      border: 1px solid #e0eafc;
+      font-size: 1em;
+      box-shadow: 0 1px 4px #0077cc11;
+    }
+    .login-container button { background: linear-gradient(90deg, #0077cc 0%, #2193b0 100%); color: #fff; font-weight: 600; border: none; transition: background 0.2s; box-shadow: 0 2px 8px #0077cc22; }
+    .login-container button:hover { background: linear-gradient(90deg, #2193b0 0%, #0077cc 100%); }
+    .forgot-link { color: #2193b0; text-decoration: underline; cursor: pointer; font-size: 0.95em; }
+    .forgot-link:hover { color: #0077cc; }
+    #forgot-form { display: none; }
+    .success, .error {
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8em 1em;
+      margin-top: 1em;
+      text-align: center;
+      font-size: 1.05em;
+      animation: fadeIn 0.5s;
+      box-shadow: 0 2px 8px #0077cc11;
+    }
+    .success { color: #28a745; background: #eafaf1; }
+    .error { color: #c0392b; background: #fdecea; }
+    .success .icon, .error .icon { font-size: 1.3em; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+    .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #0077cc33;
+      border-top: 3px solid #0077cc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    #toggle-password svg { transition: color 0.2s; }
+    #toggle-password.active svg { color: #0077cc; }
+    
+    /* Profile menu styles */
+    .profile-menu { display: none; }
+    .profile-dropdown li a:hover { background: #f5f5f5; }
+    .nav-toggler { display: none; }
+    @media (max-width: 768px) {
+      .nav-toggler { display: block; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Minimal Navbar for Login/Register -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <div class="logo">TravelPlanner</div>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+      
+      <div class="nav-auth">
+        <div class="auth-link">
+          <a href="login.html">Login</a>
+        </div>
+      </div>
+      
+      <div class="nav-toggler">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+  <div class="login-container" id="auth">
+    <h2>Login to TravelPlanner</h2>
+    <form id="login-form" autocomplete="off">
+      <input name="username" id="login-username" placeholder="Username or Email" required autofocus>
+      <div style="position:relative;">
+        <input name="password" id="login-password" type="password" placeholder="Password" required style="padding-right:2.5em;" autocomplete="off">
+        <span id="toggle-password" style="position:absolute;right:0.8em;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.2em;color:#888;z-index:2;">
+          <svg id="eye-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </span>
+      </div>
+      <button type="submit">Login</button>
+      <div id="login-loader" style="display:none;text-align:center;margin-bottom:1em;"><span class="spinner"></span></div>
+      <div style="text-align:right;">
+        <span class="forgot-link" onclick="document.getElementById('login-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Forgot password?</span>
+      </div>
+      <div id="login-result"></div>
+    </form>
+    <form id="forgot-form">
+      <h3>Forgot Password</h3>
+      <input name="username" placeholder="Username" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <button type="submit">Send OTP</button>
+      <div style="text-align:right;">
+        <span class="forgot-link" onclick="document.getElementById('forgot-form').style.display='none';document.getElementById('login-form').style.display='block';">Back to login</span>
+      </div>
+      <div id="forgot-result"></div>
+    </form>
+    
+    <!-- OTP Verification Form -->
+    <form id="otp-verification-form" style="display:none;">
+      <h3>Verify Email OTP</h3>
+      <p style="font-size: 0.9em; color: #666; margin-bottom: 1em;">We've sent a 6-digit OTP to your email address.</p>
+      <input name="email_otp" placeholder="Enter 6-digit OTP" required maxlength="6" pattern="[0-9]{6}" title="Please enter 6 digits">
+      <button type="submit">Verify OTP</button>
+      <div style="text-align:right;">
+        <span class="forgot-link" onclick="document.getElementById('otp-verification-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Back</span>
+      </div>
+      <div id="otp-result"></div>
+    </form>
+    
+    <!-- New Password Form -->
+    <form id="new-password-form" style="display:none;">
+      <h3>Set New Password</h3>
+      <input name="new_password" type="password" placeholder="New Password" required minlength="6">
+      <input name="confirm_password" type="password" placeholder="Confirm Password" required minlength="6">
+      <button type="submit">Reset Password</button>
+      <div id="password-result"></div>
+    </form>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // Password toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const togglePassword = document.getElementById('toggle-password');
+      const passwordInput = document.getElementById('login-password');
+      
+      if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          togglePassword.classList.toggle('active');
+        });
+      }
+      
+      // Forgot password form handler
+      const forgotForm = document.getElementById('forgot-form');
+      if (forgotForm) {
+        forgotForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          formData.append('action', 'send_otp');
+          
+          fetch('php/forgot_password.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            const resultDiv = document.getElementById('forgot-result');
+            if (data.status === 'success') {
+              resultDiv.innerHTML = `<div class='success'><span class='icon'>✅</span> ${data.msg || 'OTP sent to your email.'}</div>`;
+              // Store user_id for next step
+              window.userId = data.user_id;
+              // Show OTP verification form
+              document.getElementById('forgot-form').style.display = 'none';
+              document.getElementById('otp-verification-form').style.display = 'block';
+            } else {
+              resultDiv.innerHTML = `<div class='error'><span class='icon'>❌</span> ${data.msg || 'Failed to send OTP.'}</div>`;
+            }
+          })
+          .catch(() => {
+            document.getElementById('forgot-result').innerHTML = `<div class='error'><span class='icon'>❌</span> Failed to send OTP. Please try again.</div>`;
+          });
+        });
+      }
+      
+      // OTP verification form handler
+      const otpForm = document.getElementById('otp-verification-form');
+      if (otpForm) {
+        otpForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          formData.append('action', 'verify_otp');
+          formData.append('user_id', window.userId);
+          
+          fetch('php/forgot_password.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            const resultDiv = document.getElementById('otp-result');
+            if (data.status === 'success') {
+              resultDiv.innerHTML = `<div class='success'><span class='icon'>✅</span> ${data.msg || 'OTP verified successfully!'}</div>`;
+              // Show new password form
+              document.getElementById('otp-verification-form').style.display = 'none';
+              document.getElementById('new-password-form').style.display = 'block';
+            } else {
+              resultDiv.innerHTML = `<div class='error'><span class='icon'>❌</span> ${data.msg || 'Invalid OTP.'}</div>`;
+            }
+          })
+          .catch(() => {
+            document.getElementById('otp-result').innerHTML = `<div class='error'><span class='icon'>❌</span> Failed to verify OTP. Please try again.</div>`;
+          });
+        });
+      }
+      
+      // New password form handler
+      const newPasswordForm = document.getElementById('new-password-form');
+      if (newPasswordForm) {
+        newPasswordForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const newPassword = this.new_password.value;
+          const confirmPassword = this.confirm_password.value;
+          
+          if (newPassword !== confirmPassword) {
+            document.getElementById('password-result').innerHTML = `<div class='error'><span class='icon'>❌</span> Passwords do not match.</div>`;
+            return;
+          }
+          
+          if (newPassword.length < 6) {
+            document.getElementById('password-result').innerHTML = `<div class='error'><span class='icon'>❌</span> Password must be at least 6 characters.</div>`;
+            return;
+          }
+          
+          const formData = new FormData(this);
+          formData.append('action', 'reset_password');
+          formData.append('user_id', window.userId);
+          
+          fetch('php/forgot_password.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            const resultDiv = document.getElementById('password-result');
+            if (data.status === 'success') {
+              resultDiv.innerHTML = `<div class='success'><span class='icon'>✅</span> ${data.msg || 'Password reset successfully!'}</div>`;
+              // Redirect to login after 2 seconds
+              setTimeout(() => {
+                window.location.href = 'login.html';
+              }, 2000);
+            } else {
+              resultDiv.innerHTML = `<div class='error'><span class='icon'>❌</span> ${data.msg || 'Failed to reset password.'}</div>`;
+            }
+          })
+          .catch(() => {
+            document.getElementById('password-result').innerHTML = `<div class='error'><span class='icon'>❌</span> Failed to reset password. Please try again.</div>`;
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

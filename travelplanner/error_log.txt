@@ -1,0 +1,40 @@
+[27-Jun-2025 19:13:02 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:13:03 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:13:09 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:13:25 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:13:27 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:13:32 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:14:03 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:98
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 98
+[27-Jun-2025 19:15:03 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:99
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 99
+[27-Jun-2025 19:15:54 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:99
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 99
+[27-Jun-2025 19:17:30 Europe/Berlin] PHP Fatal error:  Uncaught Error: Undefined constant Mpdf\Output\Destination::STRING in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php:99
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\travelplanner\php\download_destination_ticket.php on line 99

@@ -1,0 +1,3846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* Booking Form Styles */
+        .booking-form, #traveler-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #0077cc;
+        }
+        
+        .fare-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .fare-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .fare-card:hover {
+            border-color: #0077cc;
+            transform: translateY(-2px);
+        }
+        
+        .fare-card h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .fare-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0077cc;
+            margin: 15px 0;
+        }
+        
+        .fare-per-person {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .fare-details {
+            margin: 15px 0;
+            color: #666;
+        }
+        
+        .fare-details p {
+            margin: 5px 0;
+        }
+        
+        .select-fare-btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .select-fare-btn:hover {
+            background: #005fa3;
+        }
+        
+        .traveler-field {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0077cc;
+        }
+        
+        .traveler-field h4 {
+            margin: 0 0 15px 0;
+            color: #0077cc;
+        }
+        
+        .common-contact {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .common-contact h4 {
+            margin: 0 0 15px 0;
+            color: #1976d2;
+        }
+        
+        #booking-result {
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .fare-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Payment Summary Card */
+        #main-payment-summary {
+            background: #fff !important;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px #0077cc22;
+            padding: 32px 24px 24px 24px !important;
+            margin-bottom: 24px;
+            border: 2px solid #e0eafc;
+        }
+        #main-payment-summary h4 {
+            color: #0077cc;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        #main-payment-summary .wallet-info {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 18px 0;
+            font-size: 1.1em;
+            color: #185a9d;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #main-payment-summary .wallet-info .balance {
+            color: #0077cc;
+            font-weight: bold;
+        }
+        #main-payment-summary .wallet-info .status {
+            color: #28a745;
+            font-weight: bold;
+        }
+        #main-payment-summary .total-amount {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+            margin: 18px 0 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0eafc;
+        }
+        #main-payment-summary .info-label {
+            color: #0077cc;
+            font-weight: 600;
+        }
+        #main-payment-summary .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+        #payment-btn {
+            background: linear-gradient(90deg, #0077cc, #2193b0);
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 0;
+            width: 100%;
+            font-size: 1.2em;
+            margin-top: 18px;
+            box-shadow: 0 2px 8px #0077cc33;
+            transition: background 0.2s;
+        }
+        #payment-btn:hover {
+            background: linear-gradient(90deg, #2193b0, #0077cc);
+            color: #fff;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo">TravelPlanner</div>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#packages">Packages</a></li>
+                <li><a href="#planner">Plan Trip</a></li>
+                <li><a href="#booking">Book Now</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="nav-auth">
+                <div id="welcome-user" class="welcome-user"></div>
+                <div id="login-link" class="auth-link">
+                    <a href="login.html">Login</a>
+                </div>
+                <div class="profile-menu" style="display: none;">
+                    <a href="#" id="my-profile-link" class="profile-link">
+                        <span class="profile-icon">👤</span>
+                        <span class="profile-text">My Profile</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="profile-dropdown">
+                        <li><a href="#" id="edit-profile-link">Edit Profile</a></li>
+                        <li><a href="php/mybookings.php">My Bookings</a></li>
+                        <li><a href="#" id="wallet-management-link">💰 Wallet Management</a></li>
+                        <li><a href="#" id="logout-link">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="nav-toggler">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1>Discover Amazing Destinations</h1>
+            <p>Plan your perfect trip with our expert travel services</p>
+            <a href="#planner" class="btn">Start Planning</a>
+        </div>
+    </section>
+
+    <!-- Popular Destinations Section -->
+    <section id="destinations" class="destinations">
+        <div class="container">
+            <h2>Popular Destinations</h2>
+            <div class="destinations-grid" id="main-destinations-grid">
+                <!-- Destinations will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Packages -->
+    <section id="packages" class="packages">
+        <div class="container">
+            <h2>Domestic Packages</h2>
+            <div class="package-cards" id="domestic-packages"></div>
+            <button class="btn" id="view-all-domestic-btn" style="margin:30px auto 0 auto;display:block;">View All Domestic Packages</button>
+            <h2 style="margin-top:60px;">International Packages</h2>
+            <div class="package-cards" id="international-packages"></div>
+            <button class="btn" id="view-all-international-btn" style="margin:30px auto 0 auto;display:block;">View All International Packages</button>
+        </div>
+    </section>
+
+    <!-- Planner with Toggle Buttons and Dynamic City Dropdowns -->
+    <section id="planner" class="planner">
+        <h2>Plan Your Trip</h2>
+        <div class="plan-toggle-buttons" style="text-align:center;margin-bottom:30px;">
+            <button id="toggle-dest-btn" class="toggle-btn active" type="button" style="background:#0077cc;color:#fff;padding:16px 36px;border:none;border-radius:12px;font-size:1.2em;cursor:pointer;margin:0 12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:background 0.2s;">🎯 Destination Only</button>
+            <button id="toggle-journey-btn" class="toggle-btn" type="button" style="background:#28a745;color:#fff;padding:16px 36px;border:none;border-radius:12px;font-size:1.2em;cursor:pointer;margin:0 12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:background 0.2s;">✈️ Complete Journey</button>
+        </div>
+        <div class="plan-forms-container" style="display:flex;justify-content:center;align-items:flex-start;gap:40px;">
+            <form id="destination-only-form" onsubmit="generateDestinationOnlyPlan(this); return false;" style="background:#fff;padding:32px 28px 24px 28px;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.10);max-width:350px;width:100%;display:block;">
+                <h4 style="color:#0077cc;margin-bottom:18px;">🎯 Destination Only Plan</h4>
+                <label style="font-weight:500;">Destination City</label>
+                <select name="city" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                    <option value="">Select City</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="jaipur">Jaipur</option>
+                    <option value="goa">Goa</option>
+                    <option value="udaipur">Udaipur</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="varanasi">Varanasi</option>
+                    <option value="shimla">Shimla</option>
+                    <option value="manali">Manali</option>
+                    <option value="ooty">Ooty</option>
+                    <option value="paris">Paris</option>
+                    <option value="london">London</option>
+                    <option value="new_york">New York</option>
+                    <option value="tokyo">Tokyo</option>
+                    <option value="dubai">Dubai</option>
+                    <option value="singapore">Singapore</option>
+                    <option value="bangkok">Bangkok</option>
+                    <option value="bali">Bali</option>
+                </select>
+                <label style="font-weight:500;">Travelers</label>
+                <input type="number" name="travelers" placeholder="Travelers" min="1" value="1" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">Travel Style</label>
+                <select name="travel_style" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                    <option value="budget">Budget</option>
+                    <option value="standard">Standard</option>
+                    <option value="luxury">Luxury</option>
+                </select>
+                <label style="font-weight:500;">Start Date</label>
+                <input type="date" name="start_date" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">End Date</label>
+                <input type="date" name="end_date" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">Currency</label>
+                <select name="currency" style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:18px;">
+                    <option value="INR">INR</option>
+                </select>
+                <button type="submit" class="btn" style="background:#0077cc;color:#fff;padding:12px 24px;border:none;border-radius:8px;font-size:1.1em;cursor:pointer;transition:background 0.2s;width:100%;">Generate Destination Plan</button>
+            </form>
+            <form id="complete-journey-form" onsubmit="generateDestinationOnlyPlan(this); return false;" style="background:#fff;padding:32px 28px 24px 28px;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.10);max-width:350px;width:100%;display:none;">
+                <h4 style="color:#28a745;margin-bottom:18px;">✈️ Complete Journey Plan</h4>
+                <label style="font-weight:500;">From City</label>
+                <select name="from_city" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                    <option value="">Select City</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="jaipur">Jaipur</option>
+                    <option value="goa">Goa</option>
+                    <option value="udaipur">Udaipur</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="varanasi">Varanasi</option>
+                    <option value="shimla">Shimla</option>
+                    <option value="manali">Manali</option>
+                    <option value="ooty">Ooty</option>
+                </select>
+                <label style="font-weight:500;">To City</label>
+                <select name="to_city" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                    <option value="">Select City</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="jaipur">Jaipur</option>
+                    <option value="goa">Goa</option>
+                    <option value="udaipur">Udaipur</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="varanasi">Varanasi</option>
+                    <option value="shimla">Shimla</option>
+                    <option value="manali">Manali</option>
+                    <option value="ooty">Ooty</option>
+                    <option value="paris">Paris</option>
+                    <option value="london">London</option>
+                    <option value="new_york">New York</option>
+                    <option value="tokyo">Tokyo</option>
+                    <option value="dubai">Dubai</option>
+                    <option value="singapore">Singapore</option>
+                    <option value="bangkok">Bangkok</option>
+                    <option value="bali">Bali</option>
+                </select>
+                <label style="font-weight:500;">Travelers</label>
+                <input type="number" name="travelers" placeholder="Travelers" min="1" value="1" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">Travel Style</label>
+                <select name="travel_style" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                    <option value="budget">Budget</option>
+                    <option value="standard">Standard</option>
+                    <option value="luxury">Luxury</option>
+                </select>
+                <label style="font-weight:500;">Start Date</label>
+                <input type="date" name="start_date" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">End Date</label>
+                <input type="date" name="end_date" required style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:14px;">
+                <label style="font-weight:500;">Currency</label>
+                <select name="currency" style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid #ccc;margin-bottom:18px;">
+                    <option value="INR">INR</option>
+                    
+                </select>
+                <button type="submit" class="btn" style="background:#28a745;color:#fff;padding:12px 24px;border:none;border-radius:8px;font-size:1.1em;cursor:pointer;transition:background 0.2s;width:100%;">Generate Complete Journey Plan</button>
+            </form>
+        </div>
+        <div id="suggestions" class="plan-results">
+            <!-- Travel plan will appear here -->
+        </div>
+    </section>
+
+    <!-- Main Alert Container for Booking Notifications -->
+    <div id="main-alert-container"></div>
+
+    <!-- Booking Section (Train, Bus, Flight, Hotel) -->
+    <section id="booking" class="booking">
+        <div class="container">
+            <h2>Book Your Travel</h2>
+            <!-- Booking Steps Indicator -->
+            <div class="booking-steps" style="display: flex; justify-content: center; margin-bottom: 30px; gap: 20px;">
+                <div class="step active" id="step-1">
+                    <div class="step-number">1</div>
+                    <span>Travel Details</span>
+                </div>
+                <div class="step" id="step-2">
+                    <div class="step-number">2</div>
+                    <span>Email Verification</span>
+                </div>
+                <div class="step" id="step-3">
+                    <div class="step-number">3</div>
+                    <span>Traveler Details</span>
+                </div>
+                <div class="step" id="step-4">
+                    <div class="step-number">4</div>
+                    <span>Payment</span>
+                </div>
+            </div>
+            <!-- Step 1: Basic Travel Details -->
+            <div class="booking-step" id="step-1-content">
+                <form class="booking-form" id="booking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="source">From (Source City):</label>
+                            <input name="source" type="text" id="source" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">To (Destination City):</label>
+                            <input name="destination" type="text" id="destination" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date of Journey:</label>
+                            <input name="date" type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="num_travelers">Number of Travelers:</label>
+                            <input name="num_travelers" type="number" id="num_travelers" min="1" max="10" value="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Get Fares</button>
+                </form>
+                <!-- Fare Options Display -->
+                <div id="fare-options" style="display: none; margin: 30px 0;">
+                    <h3 style="color: #ffffff;">Select Your Fare</h3>
+                    <div class="fare-cards">
+                        <div class="fare-card">
+                            <h4>Flight</h4>
+                            <div class="fare-price" id="flight-fare">-</div>
+                            <div class="fare-details">Fastest, most comfortable</div>
+                            <button type="button" class="btn select-fare-btn" data-mode="flight">Select Flight</button>
+                        </div>
+                        <div class="fare-card">
+                            <h4>Train</h4>
+                            <div class="fare-price" id="train-fare">-</div>
+                            <div class="fare-details">Economical, scenic routes</div>
+                            <button type="button" class="btn select-fare-btn" data-mode="train">Select Train</button>
+                        </div>
+                        <div class="fare-card">
+                            <h4>Bus</h4>
+                            <div class="fare-price" id="bus-fare">-</div>
+                            <div class="fare-details">Budget-friendly, flexible</div>
+                            <button type="button" class="btn select-fare-btn" data-mode="bus">Select Bus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 2: Email Verification -->
+            <div class="booking-step" id="step-2-content" style="display: none;">
+                <div class="booking-form">
+                    <h3 style="color: #0077cc;">📧 Email Verification Required</h3>
+                    <p style="color: #0077cc;">Please provide your contact details and verify your email to proceed with the booking.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact-name">Full Name:</label>
+                            <input type="text" id="contact-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-mobile">Mobile Number:</label>
+                            <input type="tel" id="contact-mobile" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email Address:</label>
+                        <input type="email" id="contact-email" required>
+                    </div>
+                    <button class="btn btn-warning" id="send-otp-btn">Send OTP</button>
+                    <div class="otp-section" id="main-otp-section" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h4 style="color: #0077cc;">🔐 Enter OTP</h4>
+                        <p style="color: #0077cc;">We've sent a 6-digit OTP to your email address.</p>
+                        <div class="otp-input" style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="0" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="1" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="2" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="3" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="4" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                            <input type="text" maxlength="1" class="main-otp-digit" data-index="5" style="width: 50px; height: 50px; text-align: center; font-size: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-warning" id="resend-otp-btn">Resend OTP</button>
+                            <button class="btn btn-success" id="verify-otp-btn">Verify OTP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 3: Traveler Details -->
+            <div class="booking-step" id="step-3-content" style="display: none;">
+                <div class="booking-form">
+                    <h3 style="color: #0077cc;">👥 Traveler Details</h3>
+                    <p style="color: #0077cc;">Please provide details for all travelers.</p>
+                    <div id="main-traveler-fields"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn btn-primary" id="proceed-to-payment-btn">Proceed to Payment</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 4: Payment -->
+            <div class="booking-step" id="step-4-content" style="display: none;">
+                <div class="booking-form">
+                    <!-- <h3>💳 Payment Summary</h3> -->
+                    <div id="main-payment-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;"></div>
+                    <div style="text-align: center;">
+                        <button class="btn btn-success" id="payment-btn">Pay ₹1 (Test Payment)</button>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">Original amount will be shown on ticket, only ₹1 will be charged for testing.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="booking-result"></div>
+        </div>
+    </section>
+
+    <!-- Login Required Modal -->
+    <div id="login-required-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; text-align: center;">
+            <h3 style="color: #0077cc; margin-bottom: 20px;">Login Required</h3>
+            <p style="margin-bottom: 20px;">You need to be logged in to make a booking. Please login or register first.</p>
+            <button id="close-login-required-modal" class="btn" style="background: #0077cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <!-- User Login & Registration -->
+    <section id="auth" class="auth">
+        <div class="container" style="max-width:400px;margin:2em auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px #0077cc22;padding:2.5em 2em;">
+            <h2 style="color:#0077cc;">Login or Register</h2>
+            <form id="login-form" autocomplete="off" class="auth-form" onsubmit="return false;">
+                <input name="username" placeholder="Username" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="password" type="password" placeholder="Password" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;" autocomplete="off">
+                <button type="submit" class="btn" style="width:100%;background:#0077cc;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;margin-bottom:0.5em;">Login</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#2193b0;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('login-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Forgot password?</span>
+                </div>
+                <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+                <div id="login-result"></div>
+            </form>
+            <form action="#" method="post" class="auth-form" id="register-form" style="display:none;">
+                <input name="first_name" placeholder="First Name" required pattern="[A-Za-z]{2,}" title="First name should be at least 2 letters and only alphabets.">
+                <input name="last_name" placeholder="Last Name" required pattern="[A-Za-z]{2,}" title="Last name should be at least 2 letters and only alphabets.">
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="username" placeholder="Username" required minlength="4" title="Username should be at least 4 characters.">
+                <input name="password" type="password" placeholder="Password" required minlength="6" title="Password should be at least 6 characters.">
+                <button type="submit" class="btn" style="width:100%;background:#2193b0;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Register</button>
+                <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </form>
+            
+            <!-- Registration OTP Verification Form -->
+            <form id="register-otp-form" style="display:none;">
+                <h3 style="color:#2193b0;">Verify Email OTP</h3>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 1em;">We've sent a 6-digit OTP to your email address for verification.</p>
+                <input name="email_otp" placeholder="Enter 6-digit OTP" required maxlength="6" pattern="[0-9]{6}" title="Please enter 6 digits" style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <button type="submit" style="width:100%;background:#2193b0;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Verify & Complete Registration</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#0077cc;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('register-otp-form').style.display='none';document.getElementById('register-form').style.display='block';">Back</span>
+                </div>
+                <div id="register-otp-result"></div>
+            </form>
+            
+            <!-- Forgot Password Form -->
+            <form id="forgot-form" style="display:none;">
+                <h3 style="color:#2193b0;">Forgot Password</h3>
+                <input name="username" placeholder="Username" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="email" type="email" placeholder="Email" required style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <button type="submit" style="width:100%;background:#e67e22;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Send OTP</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#0077cc;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('forgot-form').style.display='none';document.getElementById('login-form').style.display='block';">Back to login</span>
+                </div>
+                <div id="forgot-result"></div>
+            </form>
+            
+            <!-- OTP Verification Form -->
+            <form id="otp-verification-form" style="display:none;">
+                <h3 style="color:#2193b0;">Verify Email OTP</h3>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 1em;">We've sent a 6-digit OTP to your email address.</p>
+                <input name="email_otp" placeholder="Enter 6-digit OTP" required maxlength="6" pattern="[0-9]{6}" title="Please enter 6 digits" style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <button type="submit" style="width:100%;background:#e67e22;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Verify OTP</button>
+                <div style="text-align:right;margin-bottom:1em;">
+                  <span class="forgot-link" style="color:#0077cc;text-decoration:underline;cursor:pointer;font-size:0.95em;" onclick="document.getElementById('otp-verification-form').style.display='none';document.getElementById('forgot-form').style.display='block';">Back</span>
+                </div>
+                <div id="otp-result"></div>
+            </form>
+            
+            <!-- New Password Form -->
+            <form id="new-password-form" style="display:none;">
+                <h3 style="color:#2193b0;">Set New Password</h3>
+                <input name="new_password" type="password" placeholder="New Password" required minlength="6" style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <input name="confirm_password" type="password" placeholder="Confirm Password" required minlength="6" style="width:100%;padding:0.8em;margin-bottom:1em;border-radius:8px;border:1px solid #e0eafc;font-size:1em;">
+                <button type="submit" style="width:100%;background:#e67e22;color:#fff;font-weight:600;border:none;border-radius:8px;padding:0.8em 0;">Reset Password</button>
+                <div id="password-result"></div>
+            </form>
+            <div id="register-result"></div>
+         </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2>Photo Gallery</h2>
+            <p class="gallery-subtitle">Explore stunning destinations from around the world</p>
+            
+            <!-- Gallery Preview (First 8 images) -->
+            <div class="gallery-preview">
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Gallery items will be dynamically added here -->
+                </div>
+                <div class="gallery-actions">
+                    <button id="explore-gallery-btn" class="gallery-btn primary-btn">
+                        <span class="btn-icon">🖼️</span>
+                        <span class="btn-text">View All Gallery Images</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Full Gallery Modal -->
+    <div class="gallery-modal" id="gallery-modal">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Travel Gallery</h3>
+                <button class="close-modal" id="close-gallery-modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-content" id="modal-content">
+                <!-- Content will be injected by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <div class="gallery-controls">
+                    <button id="prev-image" class="control-btn">‹ Previous</button>
+                    <span id="image-counter">1 of 20</span>
+                    <button id="next-image" class="control-btn">Next ›</button>
+                </div>
+                <button id="back-to-gallery-main" class="gallery-btn secondary-btn">
+                    <span class="btn-icon">⟵</span>
+                    <span class="btn-text">Back to Gallery</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call To Action Section -->
+    <section id="cta" class="cta">
+        <div class="container">
+            <h2>Ready to Start Your Adventure?</h2>
+            <p>Contact us today to plan the trip of a lifetime.</p>
+            <a href="http://localhost/travelplanner/contact.html" class="btn">Contact Us</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3>About TravelPlanner</h3>
+                    <p>TravelPlanner offers the best tours and packages for your perfect vacation. Explore new places and make unforgettable memories.</p>
+                </div>
+                <div class="footer-section contact-info">
+                    <h3>Contact</h3>
+                    <a href="mailto:sarveshtravelplanner@gmail.com"><p>Email: sarveshtravelplanner@gmail.com</p></a>
+                    <a href="tel:+919130123270"><p>Phone: +91 9130123270</p></a>
+                    <div class="socials">
+                        <a href="https://www.facebook.com/">Facebook</a>
+                        <a href="https://www.instagram.com/">Instagram</a>
+                        <a href="https://x.com/">Twitter</a>
+                    </div>
+                </div>
+                <div class="footer-section contact-form">
+                    <h3>Contact Us</h3>
+                    <form id="contact-form">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <textarea name="message" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn">Send Message</button>
+                        <div id="contact-result"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 TravelPlanner. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <script>
+    // Enforce login before showing fares or booking
+    async function enforceLoginBeforeBooking() {
+        try {
+            const res = await fetch('php/session_status.php');
+            const data = await res.json();
+            if (!data.logged_in) {
+                localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+                localStorage.setItem('login_message', 'Please login to view fares and book.');
+                window.location.href = 'login.html';
+            }
+        } catch (e) {
+            localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+            localStorage.setItem('login_message', 'Please login to view fares and book.');
+            window.location.href = 'login.html';
+        }
+    }
+    // window.addEventListener('DOMContentLoaded', enforceLoginBeforeBooking); // DISABLED: allow browsing without login
+
+    // Booking System JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        setupBookingSystem();
+    });
+
+    function setupBookingSystem() {
+        const bookingForm = document.getElementById('booking-form');
+        const fareOptions = document.getElementById('fare-options');
+        const travelerForm = document.getElementById('traveler-form');
+        const bookingResult = document.getElementById('booking-result');
+        const dateInput = document.getElementById('date');
+
+        // Check if elements exist before proceeding
+        if (!bookingForm || !fareOptions || !travelerForm || !bookingResult || !dateInput) {
+            console.log('Some booking elements not found, skipping booking system setup');
+            return;
+        }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // Handle booking form submission
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if user is logged in
+            fetch('php/session_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        showFareOptions();
+                    } else {
+                        showLoginRequiredModal();
+                    }
+                })
+                .catch(() => {
+                    showLoginRequiredModal();
+                });
+        });
+
+        // Handle fare selection
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('select-fare-btn')) {
+                const mode = e.target.dataset.mode;
+                showTravelerForm(mode);
+            }
+        });
+
+        // Handle traveler form submission
+        travelerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitBooking();
+        });
+    }
+
+    function showFareOptions() {
+        // LOGIN CHECK: Only proceed if user is logged in
+        fetch('php/session_status.php')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.logged_in) {
+                    showLoginRequiredModal();
+                    return;
+                }
+                // --- The rest of the original showFareOptions logic below ---
+                const source = document.getElementById('source').value.trim();
+                const destination = document.getElementById('destination').value.trim();
+                const numTravelers = parseInt(document.getElementById('num_travelers').value);
+                const date = document.getElementById('date').value;
+
+                if (!source || !destination || !numTravelers || !date) {
+                    showMainAlert('Please fill in all required fields', 'danger');
+                    return;
+                }
+
+                // Check if source and destination are the same
+                if (source.toLowerCase() === destination.toLowerCase()) {
+                    showMainAlert('Source and destination cannot be the same', 'danger');
+                    return;
+                }
+
+                // Check if date is in the past
+                const selectedDate = new Date(date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (selectedDate < today) {
+                    showMainAlert('Cannot book for past dates', 'danger');
+                    return;
+                }
+
+                // Store booking data
+                mainBookingData.source = source;
+                mainBookingData.destination = destination;
+                mainBookingData.date = date;
+                mainBookingData.num_travelers = numTravelers;
+
+                // Calculate fares
+                const isInternational = ['paris', 'london', 'new_york', 'tokyo', 'dubai', 'singapore', 'bangkok', 'bali'].includes(destination.toLowerCase());
+                const baseFares = {
+                    flight: isInternational ? 25000 : 3000,
+                    train: isInternational ? 0 : 800,
+                    bus: isInternational ? 0 : 500
+                };
+
+                // Update fare display
+                document.getElementById('flight-fare').textContent = (baseFares.flight * numTravelers).toLocaleString();
+                document.getElementById('train-fare').textContent = isInternational ? 'N/A' : (baseFares.train * numTravelers).toLocaleString();
+                document.getElementById('bus-fare').textContent = isInternational ? 'N/A' : (baseFares.bus * numTravelers).toLocaleString();
+
+                // Show fare options
+                document.getElementById('fare-options').style.display = 'block';
+
+                // Update event listeners for fare selection
+                document.querySelectorAll('.select-fare-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        const mode = this.dataset.mode;
+                        const fareText = this.closest('.fare-card').querySelector('.fare-price').textContent;
+                        const fare = parseInt(fareText.replace(/[^\d]/g, ''));
+                        mainBookingData.selected_mode = mode;
+                        mainBookingData.selected_fare = fare;
+                        // Proceed to email verification step
+                        showMainStep(2);
+                        document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+                    };
+                });
+            })
+            .catch(() => {
+                showLoginRequiredModal();
+            });
+    }
+
+    function showTravelerForm(transportMode) {
+        const numTravelers = parseInt(document.getElementById('num_travelers').value);
+        const travelerFields = document.getElementById('traveler-fields');
+        travelerFields.innerHTML = '';
+
+        // Add common contact details for the group
+        const commonContactDiv = document.createElement('div');
+        commonContactDiv.className = 'common-contact';
+        commonContactDiv.innerHTML = `
+            <h4>Group Contact Details</h4>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mobile Number:</label>
+                    <input type="tel" name="group_mobile" required pattern="[0-9]{10}" maxlength="10" placeholder="Enter mobile number">
+                </div>
+                <div class="form-group">
+                    <label>Email Address:</label>
+                    <input type="email" name="group_email" required placeholder="Enter email address">
+                </div>
+            </div>
+        `;
+        travelerFields.appendChild(commonContactDiv);
+
+        // Generate traveler fields (only name, age, gender)
+        for (let i = 1; i <= numTravelers; i++) {
+            const travelerDiv = document.createElement('div');
+            travelerDiv.className = 'traveler-field';
+            travelerDiv.innerHTML = `
+                <h4>Traveler ${i}</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name:</label>
+                        <input type="text" name="traveler_name_${i}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Age:</label>
+                        <input type="number" name="traveler_age_${i}" min="1" max="120" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Gender:</label>
+                        <select name="traveler_gender_${i}" required>
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            travelerFields.appendChild(travelerDiv);
+        }
+
+        // Add transport mode to form
+        const transportInput = document.createElement('input');
+        transportInput.type = 'hidden';
+        transportInput.name = 'transport_mode';
+        transportInput.value = transportMode;
+        travelerFields.appendChild(transportInput);
+
+        // Show traveler form
+        document.getElementById('traveler-form').style.display = 'block';
+        document.getElementById('traveler-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function submitBooking() {
+        const formData = new FormData(document.getElementById('traveler-form'));
+        
+        // Add basic booking details
+        formData.append('source', document.getElementById('source').value);
+        formData.append('destination', document.getElementById('destination').value);
+        formData.append('date', document.getElementById('date').value);
+        formData.append('num_travelers', document.getElementById('num_travelers').value);
+        
+        // Change transport_mode to type to match PHP expectations
+        const transportMode = formData.get('transport_mode');
+        formData.delete('transport_mode');
+        formData.append('type', transportMode);
+        
+        // Calculate and add fare information
+        const numTravelers = parseInt(document.getElementById('num_travelers').value);
+        const destination = document.getElementById('destination').value;
+        const isInternational = ['paris', 'london', 'new_york', 'tokyo', 'dubai', 'singapore', 'bangkok', 'bali'].includes(destination.toLowerCase());
+        
+        const baseFares = {
+            flight: isInternational ? 25000 : 3000,
+            train: isInternational ? 0 : 800,
+            bus: isInternational ? 0 : 500
+        };
+        
+        const perPerson = baseFares[transportMode] || 0;
+        const totalFare = perPerson * numTravelers;
+        
+        formData.append('fare', totalFare);
+        formData.append('per_person', perPerson);
+        
+        // Add group contact details
+        formData.append('main_mobile', formData.get('group_mobile'));
+        formData.append('main_email', formData.get('group_email'));
+
+        // Show loading
+        const bookingResult = document.getElementById('booking-result');
+        bookingResult.innerHTML = '<div style="text-align: center; padding: 20px; color: #0077cc;">Processing booking...</div>';
+
+        fetch('php/book.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const numTravelers = parseInt(document.getElementById('num_travelers').value);
+                const perPerson = parseInt(formData.get('per_person'));
+                const totalFare = parseInt(formData.get('fare'));
+                
+                // Build bookingData object for ticket generator
+                const bookingData = {
+                    source: formData.get('source'),
+                    destination: formData.get('destination'),
+                    date: formData.get('date'),
+                    selected_mode: formData.get('type'),
+                    contact_name: formData.get('main_name') || '',
+                    contact_mobile: formData.get('main_mobile') || '',
+                    contact_email: formData.get('main_email') || '',
+                    travelers: Array.from({length: numTravelers}, (_, i) => ({
+                        name: formData.get(`traveler_name_${i+1}`) || '',
+                        age: formData.get(`traveler_age_${i+1}`) || '',
+                        gender: formData.get(`traveler_gender_${i+1}`) || ''
+                    }))
+                };
+                
+                // Show the finalized ticket preview modal with all actions
+                showTicketPreviewModal(bookingData, data.ticket_no || 'N/A', totalFare);
+                // Remove any old/legacy ticket display logic here
+                bookingResult.innerHTML = '';
+            } else {
+                bookingResult.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3>Booking Failed</h3>
+                        <p>${data.msg || 'An error occurred while processing your booking.'}</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Booking error:', error);
+            bookingResult.innerHTML = `
+                <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3>Booking Failed</h3>
+                    <p>An error occurred while processing your booking. Please try again.</p>
+                </div>
+            `;
+        });
+    }
+
+    function resetBookingForm() {
+        document.getElementById('booking-form').reset();
+        document.getElementById('fare-options').style.display = 'none';
+        document.getElementById('traveler-form').style.display = 'none';
+        document.getElementById('booking-result').innerHTML = '';
+        document.getElementById('booking-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showLoginRequiredModal() {
+        const modal = document.getElementById('login-required-modal');
+        modal.style.display = 'flex';
+        
+        document.getElementById('close-login-required-modal').onclick = function() {
+            modal.style.display = 'none';
+        };
+    }
+
+    // Enhanced download ticket function with QR codes and flight details
+    function downloadTicket(htmlData, ticketNo, format) {
+        try {
+            // Decode the base64 HTML data
+            const htmlContent = atob(htmlData);
+            
+            // Parse the booking data from the HTML content
+            const bookingData = parseBookingDataFromHtml(htmlContent);
+            
+            // Generate enhanced ticket with QR codes and flight details
+            const enhancedTicket = generateEnhancedTicket(bookingData, ticketNo);
+            
+            // Create blob and download
+            const blob = new Blob([enhancedTicket], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TravelPlanner_Ticket_${ticketNo}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('Failed to download ticket. Please try again.');
+        }
+    }
+    
+    // Parse booking data from HTML content
+    function parseBookingDataFromHtml(htmlContent) {
+        // Extract data from the HTML content
+        const sourceMatch = htmlContent.match(/From[^>]*>([^<]+)/);
+        const destinationMatch = htmlContent.match(/To[^>]*>([^<]+)/);
+        const dateMatch = htmlContent.match(/Date[^>]*>([^<]+)/);
+        const modeMatch = htmlContent.match(/Mode[^>]*>([^<]+)/);
+        const contactMatch = htmlContent.match(/Contact[^>]*>([^<]+)/);
+        const mobileMatch = htmlContent.match(/Mobile[^>]*>([^<]+)/);
+        const emailMatch = htmlContent.match(/Email[^>]*>([^<]+)/);
+        const amountMatch = htmlContent.match(/Amount[^>]*>₹([^<]+)/);
+        
+        return {
+            source: sourceMatch ? sourceMatch[1].trim() : 'Unknown',
+            destination: destinationMatch ? destinationMatch[1].trim() : 'Unknown',
+            date: dateMatch ? dateMatch[1].trim() : new Date().toISOString().split('T')[0],
+            selected_mode: modeMatch ? modeMatch[1].trim().toLowerCase() : 'flight',
+            contact_name: contactMatch ? contactMatch[1].trim() : 'Unknown',
+            contact_mobile: mobileMatch ? mobileMatch[1].trim() : 'Unknown',
+            contact_email: emailMatch ? emailMatch[1].trim() : 'Unknown',
+            num_travelers: 1,
+            fare: amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : 0,
+            travelers: [
+                {
+                    name: contactMatch ? contactMatch[1].trim() : 'Traveler 1',
+                    age: '25',
+                    gender: 'Not specified'
+                }
+            ]
+        };
+    }
+    
+    // Generate enhanced ticket with QR codes and flight details
+    function generateEnhancedTicket(bookingData, bookingId) {
+        const source = bookingData.source || '';
+        const destination = bookingData.destination || '';
+        const date = bookingData.date || '';
+        const mode = (bookingData.selected_mode || '').toUpperCase();
+        const contactName = bookingData.contact_name || '';
+        const contactMobile = bookingData.contact_mobile || '';
+        const contactEmail = bookingData.contact_email || '';
+        const travelers = bookingData.travelers || [];
+        const totalAmount = bookingData.fare || 0;
+        
+                    // QR code removed - not scannable
+        
+        // Generate flight details
+        const flightDetails = generateFlightDetails(source, destination, mode);
+        
+        // Generate payment breakdown
+        const paymentBreakdown = generatePaymentBreakdown(totalAmount, travelers.length);
+        
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+            <title>TravelPlanner Ticket - ${bookingId}</title>
+                <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px; 
+                    background: #f5f5f5; 
+                    line-height: 1.6;
+                }
+                .ticket { 
+                    max-width: 900px; 
+                    margin: 0 auto; 
+                    background: white; 
+                    border-radius: 15px; 
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+                    overflow: hidden; 
+                }
+                .header { 
+                    background: linear-gradient(135deg, #0077cc, #2193b0); 
+                    color: white; 
+                    padding: 30px; 
+                    text-align: center; 
+                    position: relative;
+                }
+                .header h1 { 
+                    margin: 0; 
+                    font-size: 32px; 
+                    font-weight: bold; 
+                }
+                .header p { 
+                    margin: 10px 0 0 0; 
+                    opacity: 0.9; 
+                }
+                /* QR code removed - not scannable */
+                .body { 
+                    padding: 30px; 
+                }
+                .section { 
+                    margin-bottom: 25px; 
+                }
+                .section h3 { 
+                    color: #0077cc; 
+                    border-bottom: 2px solid #0077cc; 
+                    padding-bottom: 8px; 
+                    margin-bottom: 15px; 
+                }
+                .info-grid { 
+                    display: grid; 
+                    grid-template-columns: 1fr 1fr; 
+                    gap: 15px; 
+                    margin-bottom: 20px; 
+                }
+                .info-item { 
+                    background: #f8f9fa; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #0077cc; 
+                }
+                .info-label { 
+                    font-weight: bold; 
+                    color: #333; 
+                    margin-bottom: 5px; 
+                }
+                .info-value { 
+                    color: #666; 
+                }
+                .payment { 
+                    background: linear-gradient(135deg, #28a745, #20c997); 
+                    color: white; 
+                    padding: 20px; 
+                    border-radius: 10px; 
+                    text-align: center; 
+                    margin: 20px 0; 
+                }
+                .flight-details {
+                    background: linear-gradient(135deg, #ff6b35, #f7931e);
+                    color: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                }
+                .flight-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 15px 0;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .flight-table th, .flight-table td {
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid rgba(255,255,255,0.2);
+                }
+                .flight-table th {
+                    background: rgba(255,255,255,0.2);
+                    font-weight: bold;
+                }
+                .payment-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 15px 0;
+                }
+                .payment-table th, .payment-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                }
+                .payment-table th {
+                    background: #f8f9fa;
+                    font-weight: bold;
+                }
+                .footer { 
+                    background: #333; 
+                    color: white; 
+                    padding: 20px; 
+                    text-align: center; 
+                }
+                .footer p { 
+                    margin: 5px 0; 
+                }
+                .traveler-table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin: 15px 0; 
+                }
+                .traveler-table th, .traveler-table td { 
+                    border: 1px solid #ddd; 
+                    padding: 8px; 
+                    text-align: left; 
+                }
+                .traveler-table th { 
+                    background: #f8f9fa; 
+                    font-weight: bold; 
+                }
+                .status-badge {
+                    background: #28a745;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                @media print { 
+                    body { background: white; } 
+                    .ticket { box-shadow: none; } 
+                }
+                </style>
+            </head>
+            <body>
+            <div class="ticket">
+                                <div class="header">
+                        <h1>TravelPlanner</h1>
+                        <p>Official Travel Ticket</p>
+                    <div style="margin-top: 15px;">
+                        <span class="status-badge">CONFIRMED</span>
+                    </div>
+                    </div>
+                    
+                <div class="body">
+                    <div class="payment">
+                        <h3>Payment Confirmed</h3>
+                        <div><strong>Booking ID:</strong> ${bookingId}</div>
+                        <div><strong>Amount Paid:</strong> ₹1 (Test Payment)</div>
+                        <div><strong>Original Amount:</strong> ₹${totalAmount.toLocaleString()}</div>
+                        <div><strong>Booking Date:</strong> ${new Date().toLocaleString()}</div>
+                    </div>
+                    
+                    <div class="flight-details">
+                        <h3>🛫 Flight Details</h3>
+                        ${flightDetails}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>💰 Payment Breakdown</h3>
+                        ${paymentBreakdown}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>👥 Traveler Information</h3>
+                        <table class="traveler-table">
+                            <tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th><th>Seat</th></tr>
+                            ${travelers.map((traveler, i) => {
+                                const seatNumber = generateSeatNumber(mode, i + 1);
+                                return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>${traveler.name}</td>
+                                        <td>${traveler.age}</td>
+                                        <td>${traveler.gender}</td>
+                                        <td>${seatNumber}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </table>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>📞 Contact Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                <div class="info-label">Contact Name</div>
+                                <div class="info-value">${contactName}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Mobile</div>
+                                <div class="info-value">${contactMobile}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">${contactEmail}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>📋 Important Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Check-in Time</div>
+                                <div class="info-value">2 hours before departure</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Boarding Time</div>
+                                <div class="info-value">30 minutes before departure</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Baggage Allowance</div>
+                                <div class="info-value">15kg check-in + 7kg cabin</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Document Required</div>
+                                <div class="info-value">Valid ID Proof</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>📞 TravelPlanner Customer Support</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">24/7 Helpline</div>
+                                <div class="info-value">+91 9130123270</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">WhatsApp Support</div>
+                                    <div class="info-value">+91 9130123270</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Email Support</div>
+                                    <div class="info-value">sarveshtravelplanner@gmail.com</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                <div class="footer">
+                        <p><strong>Thank you for choosing TravelPlanner!</strong></p>
+                        <p>Have a safe and enjoyable journey</p>
+                        <p>Generated on: ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            </body>
+            </html>`;
+    }
+    
+    function generateFlightDetails(source, destination, mode) {
+        const modes = {
+            'FLIGHT': {
+                icon: '✈️',
+                type: 'Flight',
+                operator: 'Air India',
+                departure: '09:30 AM',
+                arrival: '11:45 AM',
+                duration: '2h 15m'
+            },
+            'TRAIN': {
+                icon: '🚂',
+                type: 'Train',
+                operator: 'Indian Railways',
+                departure: '08:15 AM',
+                arrival: '11:30 PM',
+                duration: '15h 15m'
+            },
+            'BUS': {
+                icon: '🚌',
+                type: 'Bus',
+                operator: 'State Transport',
+                departure: '10:00 PM',
+                arrival: '08:00 AM',
+                duration: '10h 00m'
+            }
+        };
+        
+        const modeInfo = modes[mode] || modes['FLIGHT'];
+        const flightNumber = generateFlightNumber(source, destination, mode);
+        
+        return `
+        <div class="flight-details">
+            <h3 style="margin: 0 0 15px 0;">${modeInfo.type} Details</h3>
+            <table class="flight-table">
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>${modeInfo.type} Number</th>
+                        <th>Operator</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>${source} → ${destination}</strong></td>
+                        <td><strong>${flightNumber}</strong></td>
+                        <td>${modeInfo.operator}</td>
+                        <td>${modeInfo.departure}</td>
+                        <td>${modeInfo.arrival}</td>
+                        <td>${modeInfo.duration}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>`;
+    }
+    
+    function generateFlightNumber(source, destination, mode) {
+        const sourceCode = source.substring(0, 3).toUpperCase();
+        const destCode = destination.substring(0, 3).toUpperCase();
+        
+        if (mode === 'FLIGHT') {
+            return 'AI' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+        } else if (mode === 'TRAIN') {
+            return '12' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            } else {
+            return 'BUS' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+        }
+    }
+    
+    function generateSeatNumber(mode, travelerNumber) {
+        if (mode === 'FLIGHT') {
+            const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const row = rows[(travelerNumber - 1) % 6];
+            const seat = Math.floor(Math.random() * 30) + 1;
+            return seat + row;
+        } else if (mode === 'TRAIN') {
+            const coach = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3'];
+            const coachType = coach[(travelerNumber - 1) % 6];
+            const berth = Math.floor(Math.random() * 72) + 1;
+            return coachType + '-' + berth;
+        } else {
+            return 'Seat ' + travelerNumber;
+        }
+    }
+    
+    function generatePaymentBreakdown(totalAmount, numTravelers) {
+        const baseFare = totalAmount / numTravelers;
+        const taxes = baseFare * 0.18; // 18% GST
+        const convenienceFee = 50;
+        const totalPerPerson = baseFare + taxes + convenienceFee;
+        
+        return `
+        <table class="payment-table">
+            <tr>
+                <th>Description</th>
+                <th>Per Person</th>
+                <th>Total (${numTravelers} persons)</th>
+            </tr>
+            <tr>
+                <td>Base Fare</td>
+                <td>₹${baseFare.toFixed(2)}</td>
+                <td>₹${(baseFare * numTravelers).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Taxes & Fees (18% GST)</td>
+                <td>₹${taxes.toFixed(2)}</td>
+                <td>₹${(taxes * numTravelers).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Convenience Fee</td>
+                <td>₹${convenienceFee.toFixed(2)}</td>
+                <td>₹${(convenienceFee * numTravelers).toFixed(2)}</td>
+            </tr>
+            <tr style="background: #e8f5e8; font-weight: bold;">
+                <td>Total Amount</td>
+                <td>₹${totalPerPerson.toFixed(2)}</td>
+                <td>₹${totalAmount.toFixed(2)}</td>
+            </tr>
+            <tr style="background: #fff3cd;">
+                <td colspan="2">Amount Paid (Test Payment)</td>
+                <td>₹1.00</td>
+            </tr>
+        </table>`;
+    }
+    
+            // QR code functions removed - not scannable
+
+    // Enhanced Gallery Data with better images and descriptions
+    const galleryItems = [
+        {
+            "src": "https://th.bing.com/th/id/OIP.WqCqk88XDajiv58i8waUGwHaD9?w=274&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Beautiful beaches of Goa",
+            "category": "beach",
+            "location": "Goa, India",
+            "description": "Pristine beaches with golden sand and crystal clear waters"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.bqJG_cItL3wtuwaQvAzhiQHaEe?w=270&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Majestic Himalayas",
+            "category": "mountain",
+            "location": "Himalayas, India",
+            "description": "Snow-capped peaks reaching towards the sky"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP._dpxdJcbfJnyecpAR4h9agHaE9?w=246&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Historic Delhi",
+            "category": "city",
+            "location": "Delhi, India",
+            "description": "Ancient monuments and modern city life"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.DmUuCIPQLurxIWCFiHDLjwHaEK?w=294&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Spiritual Varanasi",
+            "category": "culture",
+            "location": "Varanasi, India",
+            "description": "Sacred ghats along the holy Ganges River"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.Sd4kNeztzoJZErqY5PbV_AHaFj?w=252&h=189&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Backwaters of Kerala",
+            "category": "nature",
+            "location": "Kerala, India",
+            "description": "Serene backwaters with lush greenery"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.bMW9GaEICUj1-4XrJArQHgHaE7?w=247&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Thar Desert in Rajasthan",
+            "category": "desert",
+            "location": "Rajasthan, India",
+            "description": "Vast golden sands and camel caravans"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.kiIOjpW81FNARQrXzU6dzgHaFj?w=243&h=182&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Tea Gardens of Munnar",
+            "category": "nature",
+            "location": "Munnar, India",
+            "description": "Rolling hills covered in tea plantations"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.6TM8tJSWnj37aQV7qiaR2wHaE8?w=286&h=191&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Sunset at Rishikesh",
+            "category": "spiritual",
+            "location": "Rishikesh, India",
+            "description": "Peaceful sunset over the Ganges"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.Gj-r6SOANqXxbLS2ZodDVgHaKd?w=134&h=189&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Charminar in Hyderabad",
+            "category": "monument",
+            "location": "Hyderabad, India",
+            "description": "Iconic monument of the city"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.dLvd6naOTsgFvk1TXvrzUgHaE4?w=197&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Colonial charm of Pondicherry",
+            "category": "architecture",
+            "location": "Pondicherry, India",
+            "description": "French colonial architecture and culture"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.Z97bkX40h0DN2g8WwHpqJwHaLO?w=186&h=281&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Eiffel Tower in Paris",
+            "category": "landmark",
+            "location": "Paris, France",
+            "description": "The iconic symbol of Paris"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.1986zwvTTvI1P4Q12dL72gHaE8?w=303&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Streets of Tokyo at night",
+            "category": "city",
+            "location": "Tokyo, Japan",
+            "description": "Neon-lit streets and modern cityscape"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.1Y_LVpL5N7wYZt_sE19HGgHaEo?w=306&h=190&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Santorini cliffs in Greece",
+            "category": "coast",
+            "location": "Santorini, Greece",
+            "description": "White buildings on volcanic cliffs"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.YIgj1lwNFgqH1HLj7VbhtQHaLH?w=186&h=279&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Statue of Liberty in New York",
+            "category": "landmark",
+            "location": "New York, USA",
+            "description": "Symbol of freedom and democracy"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.Vk0uwiEUjM0EKU4u4pJxxAHaE8?w=258&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Sydney Opera House",
+            "category": "architecture",
+            "location": "Sydney, Australia",
+            "description": "Iconic performing arts center"
+        },
+        {
+            "src": "https://www.gibsons.co.uk/wp-content/uploads/2023/12/Dubai-400x500.jpg",
+            "caption": "Desert safari in Dubai",
+            "category": "adventure",
+            "location": "Dubai, UAE",
+            "description": "Thrilling desert adventures"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.D4LlclIbgcaytUqVUt5AVAHaEn?w=261&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Northern Lights in Iceland",
+            "category": "nature",
+            "location": "Iceland",
+            "description": "Aurora borealis dancing in the sky"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.wIRKfP8CSNoGuIFh9FpfnAHaE8?w=256&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Great Wall of China",
+            "category": "monument",
+            "location": "China",
+            "description": "Ancient wonder of the world"
+        },
+        {
+            "src": "https://th.bing.com/th/id/OIP.C-38BXgxMMOH09C9KYqUeQHaEo?w=245&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "caption": "Niagara Falls",
+            "category": "waterfall",
+            "location": "Canada/USA",
+            "description": "Powerful natural wonder"
+        },
+        {
+            "src": "https://www.andbeyond.com/wp-content/uploads/sites/5/Amazon-Rain-Forest.jpg",
+            "caption": "Amazon Rainforest",
+            "category": "forest",
+            "location": "Brazil",
+            "description": "Lush biodiversity and wildlife"
+        }
+    ];
+
+    let currentImageIndex = 0;
+    let isModalOpen = false;
+
+    // Initialize Gallery
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading state
+        const grid = document.getElementById('gallery-grid');
+        if (grid) {
+            grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Loading gallery...</div>';
+            
+            // Small delay to ensure smooth loading
+            setTimeout(() => {
+                renderGalleryPreview();
+                setupGalleryEventListeners();
+            }, 100);
+        }
+    });
+
+    // Render Gallery Preview (First 8 images)
+    function renderGalleryPreview() {
+        const grid = document.getElementById('gallery-grid');
+        const previewItems = galleryItems.slice(0, 8);
+        
+        grid.innerHTML = previewItems.map((item, idx) => `
+            <div class="gallery-item" data-index="${idx}" data-category="${item.category}">
+                <div class="gallery-item-image">
+                    <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                    <div class="gallery-overlay">
+                        <div class="overlay-content">
+                            <h4>${item.caption}</h4>
+                            <p>${item.location}</p>
+                            <span class="category-badge">${item.category}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item-info">
+                    <h4>${item.caption}</h4>
+                    <p>${item.location}</p>
+                    <span class="category-tag">${item.category}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Setup Event Listeners
+    function setupGalleryEventListeners() {
+        // Gallery item clicks - use event delegation for better performance
+        document.addEventListener('click', function(e) {
+            const galleryItem = e.target.closest('.gallery-item');
+            if (galleryItem) {
+                const index = parseInt(galleryItem.dataset.index);
+                openGalleryModal(index);
+            }
+        });
+
+        // Single button for viewing all images
+        document.getElementById('explore-gallery-btn').addEventListener('click', () => {
+            openGalleryModal(0);
+        });
+
+        document.getElementById('back-to-gallery-main').addEventListener('click', closeGalleryModal);
+        document.getElementById('close-gallery-modal').addEventListener('click', closeGalleryModal);
+        document.getElementById('modal-overlay').addEventListener('click', closeGalleryModal);
+
+        // Navigation controls
+        document.getElementById('prev-image').addEventListener('click', showPreviousImage);
+        document.getElementById('next-image').addEventListener('click', showNextImage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', handleKeyboardNavigation);
+    }
+
+    // Open Gallery Modal
+    function openGalleryModal(index = 0) {
+        currentImageIndex = index;
+        isModalOpen = true;
+        
+        const modal = document.getElementById('gallery-modal');
+        modal.classList.add('active');
+        
+        renderGalleryGrid();
+        updateImageCounter();
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close Gallery Modal
+    function closeGalleryModal() {
+        isModalOpen = false;
+        
+        const modal = document.getElementById('gallery-modal');
+        modal.classList.remove('active');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }
+
+    // Render Gallery Grid in Modal
+    function renderGalleryGrid() {
+        const content = document.getElementById('modal-content');
+        
+        content.innerHTML = `
+            <div class="gallery-masonry">
+                ${galleryItems.map((item, idx) => `
+                    <div class="masonry-item ${idx === currentImageIndex ? 'active' : ''}" data-index="${idx}">
+                        <div class="masonry-image">
+                            <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                            <div class="masonry-overlay">
+                                <div class="overlay-info">
+                                    <h4>${item.caption}</h4>
+                                    <p>${item.location}</p>
+                                    <span class="category-badge">${item.category}</span>
+                                    <p class="description">${item.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Add click listeners to masonry items
+        content.querySelectorAll('.masonry-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = parseInt(item.dataset.index);
+                currentImageIndex = index;
+                updateActiveImage();
+                updateImageCounter();
+                
+                // Scroll to the active image
+                const activeItem = content.querySelector('.masonry-item.active');
+                if (activeItem) {
+                    activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+    }
+
+    // Navigation Functions
+    function showPreviousImage() {
+        currentImageIndex = (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
+        updateActiveImage();
+        updateImageCounter();
+    }
+
+    function showNextImage() {
+        currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
+        updateActiveImage();
+        updateImageCounter();
+    }
+
+    function updateActiveImage() {
+        document.querySelectorAll('.masonry-item').forEach((item, idx) => {
+            item.classList.toggle('active', idx === currentImageIndex);
+        });
+    }
+
+    function updateImageCounter() {
+        const counter = document.getElementById('image-counter');
+        counter.textContent = `${currentImageIndex + 1} of ${galleryItems.length}`;
+    }
+
+    // Keyboard Navigation
+    function handleKeyboardNavigation(e) {
+        if (!isModalOpen) return;
+        
+        switch(e.key) {
+            case 'Escape':
+                closeGalleryModal();
+                break;
+            case 'ArrowLeft':
+                showPreviousImage();
+                break;
+            case 'ArrowRight':
+                showNextImage();
+                break;
+        }
+    }
+
+    // Navbar Gallery Link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        if (link.textContent.trim().toLowerCase() === 'gallery') {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                openGalleryModal(0);
+            });
+        }
+    });
+
+    // Register/Login form toggling
+    var showRegister = document.getElementById('show-register');
+    var showLogin = document.getElementById('show-login');
+    var loginForm = document.getElementById('login-form');
+    var registerForm = document.getElementById('register-form');
+    
+    if (showRegister && loginForm && registerForm) {
+        showRegister.onclick = function(e) {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        };
+    }
+    
+    if (showLogin && loginForm && registerForm) {
+        showLogin.onclick = function(e) {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        };
+    }
+
+    // Contact form AJAX handler
+    var contactForm = document.getElementById('contact-form');
+    var contactResult = document.getElementById('contact-result');
+    if (contactForm && contactResult) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            contactResult.innerHTML = '<span style="color:#0077cc;">Sending...</span>';
+            var formData = new FormData(contactForm);
+            fetch('php/contact.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    contactResult.innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                    contactForm.reset();
+                } else {
+                    contactResult.innerHTML = '<span style="color:red;">' + (data.msg || 'Failed to send message.') + '</span>';
+                }
+            })
+            .catch(() => {
+                contactResult.innerHTML = '<span style="color:red;">Failed to send message. Please try again.</span>';
+            });
+        });
+    }
+    
+    // Registration form handler with OTP
+    var registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            fetch('php/register.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Store user ID for OTP verification
+                    localStorage.setItem('temp_user_id', data.user_id);
+                    
+                    // Show OTP verification form
+                    document.getElementById('register-form').style.display = 'none';
+                    document.getElementById('register-otp-form').style.display = 'block';
+                    document.getElementById('register-result').innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                } else {
+                    document.getElementById('register-result').innerHTML = '<span style="color:red;">' + (data.msg || 'Registration failed.') + '</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('register-result').innerHTML = '<span style="color:red;">Registration failed. Please try again.</span>';
+            });
+        });
+    }
+    
+    // Registration OTP verification handler
+    var registerOtpForm = document.getElementById('register-otp-form');
+    if (registerOtpForm) {
+        registerOtpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var userId = localStorage.getItem('temp_user_id');
+            
+            if (!userId) {
+                document.getElementById('register-otp-result').innerHTML = '<span style="color:red;">Session expired. Please start registration again.</span>';
+                return;
+            }
+            
+            formData.append('user_id', userId);
+            
+            fetch('php/verify_registration_otp.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('register-otp-result').innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                    
+                    // Clear stored user ID
+                    localStorage.removeItem('temp_user_id');
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        document.getElementById('register-otp-form').style.display = 'none';
+                        document.getElementById('login-form').style.display = 'block';
+                        document.getElementById('register-otp-result').innerHTML = '';
+                    }, 2000);
+                } else {
+                    document.getElementById('register-otp-result').innerHTML = '<span style="color:red;">' + (data.msg || 'OTP verification failed.') + '</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('register-otp-result').innerHTML = '<span style="color:red;">OTP verification failed. Please try again.</span>';
+            });
+        });
+    }
+    
+    // Forgot password form handler
+    var forgotForm = document.getElementById('forgot-form');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            formData.append('action', 'send_otp');
+            
+            fetch('php/forgot_password.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.userId = data.user_id;
+                    document.getElementById('forgot-form').style.display = 'none';
+                    document.getElementById('otp-verification-form').style.display = 'block';
+                    document.getElementById('forgot-result').innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                } else {
+                    document.getElementById('forgot-result').innerHTML = '<span style="color:red;">' + (data.msg || 'Failed to send OTP.') + '</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('forgot-result').innerHTML = '<span style="color:red;">Failed to send OTP. Please try again.</span>';
+            });
+        });
+    }
+    
+    // OTP verification form handler
+    var otpForm = document.getElementById('otp-verification-form');
+    if (otpForm) {
+        otpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            formData.append('action', 'verify_otp');
+            formData.append('user_id', window.userId);
+            
+            fetch('php/forgot_password.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('otp-verification-form').style.display = 'none';
+                    document.getElementById('new-password-form').style.display = 'block';
+                    document.getElementById('otp-result').innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                } else {
+                    document.getElementById('otp-result').innerHTML = '<span style="color:red;">' + (data.msg || 'Invalid OTP.') + '</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('otp-result').innerHTML = '<span style="color:red;">Failed to verify OTP. Please try again.</span>';
+            });
+        });
+    }
+    
+    // New password form handler
+    var newPasswordForm = document.getElementById('new-password-form');
+    if (newPasswordForm) {
+        newPasswordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var newPassword = this.new_password.value;
+            var confirmPassword = this.confirm_password.value;
+            
+            if (newPassword !== confirmPassword) {
+                document.getElementById('password-result').innerHTML = '<span style="color:red;">Passwords do not match.</span>';
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                document.getElementById('password-result').innerHTML = '<span style="color:red;">Password must be at least 6 characters.</span>';
+                return;
+            }
+            
+            var formData = new FormData(this);
+            formData.append('action', 'reset_password');
+            formData.append('user_id', window.userId);
+            
+            fetch('php/forgot_password.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('password-result').innerHTML = '<span style="color:green;">' + data.msg + '</span>';
+                    setTimeout(() => {
+                        document.getElementById('new-password-form').style.display = 'none';
+                        document.getElementById('login-form').style.display = 'block';
+                        document.getElementById('password-result').innerHTML = '';
+                    }, 2000);
+                } else {
+                    document.getElementById('password-result').innerHTML = '<span style="color:red;">' + (data.msg || 'Failed to reset password.') + '</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('password-result').innerHTML = '<span style="color:red;">Failed to reset password. Please try again.</span>';
+            });
+        });
+    }
+    
+    // Destinations functionality for main page
+    async function loadMainDestinations() {
+        try {
+            const response = await fetch('php/get_destinations.php?limit=6'); // Show only 6
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                renderMainDestinations(data.data);
+            } else {
+                console.error('Failed to load destinations:', data.message);
+                loadFallbackDestinations();
+            }
+        } catch (error) {
+            console.error('Error loading destinations:', error);
+            loadFallbackDestinations();
+        }
+    }
+    
+    function renderMainDestinations(destinations) {
+        const grid = document.getElementById('main-destinations-grid');
+        if (!grid) return;
+        
+        console.log('Rendering destinations:', destinations);
+        
+        grid.innerHTML = destinations.map(dest => {
+            console.log('Processing destination:', dest.name, dest);
+            
+            // Use image_url field from database, fallback to a default image
+            const imageUrl = dest.image_url || 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(dest.name);
+            
+            return `
+            <div class="dest-card" data-city="${dest.name.toLowerCase()}">
+                    <div class="dest-image" style="background-image: url('${imageUrl}')">
+                        <div class="dest-overlay">
+                            <div class="overlay-content">
+                                <h4>${dest.name}</h4>
+                                <p>${dest.location || 'India'}</p>
+                                <span class="category-badge">${dest.category || 'Destination'}</span>
+                            </div>
+                        </div>
+                    </div>
+                <div class="dest-info">
+                    <h3>${dest.name}</h3>
+                        <p>${dest.location || 'India'}</p>
+                    <div class="dest-meta">
+                        ${dest.features && dest.features.length > 0 ? 
+                            dest.features.slice(0, 3).map(feature => `<span>${feature}</span>`).join('') : 
+                            '<span>Amazing Destination</span>'
+                        }
+                    </div>
+                        <div class="dest-price">${dest.price_range || dest.price || 'From ₹15,000'}</div>
+                    <div class="dest-actions">
+                        <button class="view-dest-btn" onclick="showMainDestinationDetails(${dest.id})">View Details</button>
+                        <button class="book-dest-btn" onclick="handleBookNow('${dest.name}')">Book Now</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+        // Add "View All Destinations" button after the grid
+        const destinationsSection = document.getElementById('destinations');
+        if (destinationsSection) {
+            // Remove existing view all button if it exists
+            const existingButton = destinationsSection.querySelector('.view-all-destinations-btn');
+            if (existingButton) {
+                existingButton.remove();
+            }
+            
+            // Add new view all button
+            const viewAllButton = document.createElement('div');
+            viewAllButton.className = 'view-all-destinations-btn';
+            viewAllButton.style.cssText = `
+                text-align: center;
+                margin-top: 40px;
+            `;
+            viewAllButton.innerHTML = `
+                <a href="destinations.html" class="view-all-btn" style="
+                    display: inline-block;
+                    background: linear-gradient(135deg, #0077cc, #2193b0);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 16px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(0, 119, 204, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 119, 204, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 119, 204, 0.3)'">
+                    🌍 View All Destinations
+                </a>
+            `;
+            destinationsSection.appendChild(viewAllButton);
+        }
+    }
+    
+    // Login check for booking
+    function isUserLoggedIn() {
+        // Check if user is logged in by making an API call
+        return new Promise((resolve) => {
+            fetch('php/session_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    resolve(data.logged_in);
+                })
+                .catch(() => {
+                    resolve(false);
+                });
+        });
+    }
+    
+    async function handleBookNow(destinationName) {
+        const loggedIn = await isUserLoggedIn();
+        if (!loggedIn) {
+            // Show modal if present, else alert
+            const modal = document.getElementById('login-required-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                const closeBtn = document.getElementById('close-login-required-modal');
+                if (closeBtn) {
+                    closeBtn.onclick = function() {
+                        modal.style.display = 'none';
+                    };
+                }
+            } else {
+                alert('You need to be logged in to make a booking. Please login or register first.');
+            }
+            return;
+        }
+        // If logged in, proceed to booking
+        goToBooking(destinationName);
+    }
+    
+    function loadFallbackDestinations() {
+        const grid = document.getElementById('main-destinations-grid');
+        if (!grid) return;
+        
+        grid.innerHTML = `
+            <div class="dest-card" data-city="goa">
+                <div class="dest-image" style="background-image: url('https://th.bing.com/th/id/OIP.RGpdb3FKmZ07rSFIvoaEtAHaE8?w=301&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3')">
+                    <div class="dest-overlay">
+                        <div class="overlay-content">
+                            <h4>Goa</h4>
+                            <p>India</p>
+                            <span class="category-badge">Beach</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dest-info">
+                    <h3>Goa</h3>
+                    <p>India</p>
+                    <div class="dest-meta">
+                        <span>🏖️ Beach Paradise</span>
+                        <span>🌅 Sunset Views</span>
+                        <span>🎉 Nightlife</span>
+                    </div>
+                    <div class="dest-price">From ₹15,000</div>
+                    <div class="dest-actions">
+                        <button class="view-dest-btn" onclick="showMainDestinationDetails('goa')">View Details</button>
+                        <button class="book-dest-btn" onclick="handleBookNow('Goa')">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    async function showMainDestinationDetails(destinationId) {
+        try {
+            const response = await fetch(`php/get_destination.php?id=${destinationId}`);
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showMainDestinationModal(data.data);
+            } else {
+                alert('Destination details not available');
+            }
+        } catch (error) {
+            console.error('Error fetching destination details:', error);
+            alert('Failed to load destination details');
+        }
+    }
+    
+    function showMainDestinationModal(dest) {
+        const modal = document.createElement('div');
+        modal.className = 'destination-modal';
+        modal.style.cssText = `
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        // Helper function to render array items
+        const renderArrayItems = (items, className = 'info-tag') => {
+            if (!items || !Array.isArray(items) || items.length === 0) {
+                return '<p>Information not available</p>';
+            }
+            return items.map(item => `<span class="${className}">${item}</span>`).join('');
+        };
+        
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 12px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+                <span style="position: absolute; right: 20px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; z-index: 1001; color: #333; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" onclick="this.closest('.destination-modal').remove()">&times;</span>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="height: 300px; background-size: cover; background-position: center; border-radius: 12px 12px 0 0; background-image: url('${dest.image_url || 'https://via.placeholder.com/900x300?text=' + encodeURIComponent(dest.name)}')"></div>
+                    <div style="padding: 30px;">
+                        <h2 style="color: #185a9d; margin-bottom: 10px;">${dest.name}</h2>
+                        <p style="color: #666; margin-bottom: 15px;">📍 ${dest.location}</p>
+                        <p style="line-height: 1.6; margin-bottom: 20px;">${dest.description}</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">📅 Best Time to Visit</h4>
+                                <p>${dest.best_time || 'Year-round'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">⏱️ Recommended Duration</h4>
+                                <p>${dest.duration || '5-7 days'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">🏃 Difficulty Level</h4>
+                                <p>${dest.difficulty || 'Easy'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">💰 Price Range</h4>
+                                <p>${dest.price_range || 'From ₹15,000'}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #28a745; margin-bottom: 15px;">🎯 Why Visit ${dest.name}?</h4>
+                            <p style="line-height: 1.6; color: #555;">${dest.why_visit || 'This destination offers unique experiences and beautiful landscapes.'}</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #ff6b35; margin-bottom: 15px;">🌟 Popular For</h4>
+                            <p style="line-height: 1.6; color: #555;">${dest.popular_for || 'Tourism, sightseeing, and cultural experiences.'}</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #43cea2; margin-bottom: 15px;">🏛️ Local Sights & Attractions</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${renderArrayItems(dest.local_sights, 'sight-tag')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #667eea; margin-bottom: 15px;">🗺️ Popular Places to Visit</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${renderArrayItems(dest.popular_places, 'place-tag')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #e74c3c; margin-bottom: 15px;">⭐ Key Highlights</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${renderArrayItems(dest.highlights, 'highlight-tag')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #9b59b6; margin-bottom: 15px;">🏷️ Features</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${renderArrayItems(dest.features, 'feature-tag')}
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 1.5em; font-weight: bold; color: #185a9d; margin-bottom: 20px; text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                            ${dest.price_range || 'From ₹15,000'}
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1;" onclick="handleBookNow('${dest.name}')">Book This Destination</button>
+                            <button style="background: #666; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;" onclick="this.closest('.destination-modal').remove()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Close modal when clicking outside
+        modal.onclick = function(e) {
+            if (e.target === modal) modal.remove();
+        };
+    }
+    
+    async function goToBooking(destinationName) {
+        // Check if user is logged in
+        try {
+            const response = await fetch('php/session_status.php');
+            const data = await response.json();
+            
+            if (!data.logged_in) {
+                localStorage.setItem('login_redirect', window.location.pathname);
+                localStorage.setItem('login_message', 'Please login to book a destination.');
+                window.location.href = 'login.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            localStorage.setItem('login_redirect', window.location.pathname);
+            localStorage.setItem('login_message', 'Please login to book a destination.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Redirect to new package booking page with destination parameters
+        window.location.href = `package_booking.html?type=destination&name=${encodeURIComponent(destinationName)}`;
+    }
+    
+    // Date validation function
+    function validateBookingDate(dateInput) {
+        const selectedDate = new Date(dateInput);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        
+        if (selectedDate < today) {
+            alert('Please select a future date for booking.');
+            return false;
+        }
+        return true;
+    }
+    
+    // On login.html, show message if present
+    document.addEventListener('DOMContentLoaded', function() {
+        loadMainDestinations(); // Load destinations when page loads
+        loadMainPackages(); // Load packages when page loads
+        
+        const loginMsg = localStorage.getItem('login_message');
+        if (window.location.pathname.endsWith('login.html') && loginMsg) {
+            const msgDiv = document.createElement('div');
+            msgDiv.style = 'color: red; text-align: center; margin-top: 20px; font-weight: bold;';
+            msgDiv.innerText = loginMsg;
+            document.body.prepend(msgDiv);
+            localStorage.removeItem('login_message');
+        }
+        
+        // Add date validation to all date inputs
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                validateBookingDate(this.value);
+            });
+        });
+        
+        // Add package booking event listeners
+        setupPackageBooking();
+        setupPlannerToggles();
+        setupBookingForm();
+        setupAuthUI();
+        setupPasswordReset();
+    });
+    
+    function setupPackageBooking() {
+        // Add event listeners for "View All" buttons
+        const viewAllDomesticBtn = document.getElementById('view-all-domestic-btn');
+        const viewAllInternationalBtn = document.getElementById('view-all-international-btn');
+        
+        if (viewAllDomesticBtn) {
+            viewAllDomesticBtn.addEventListener('click', () => {
+                window.location.href = 'packages.html#domestic';
+            });
+        }
+        
+        if (viewAllInternationalBtn) {
+            viewAllInternationalBtn.addEventListener('click', () => {
+                window.location.href = 'packages.html#international';
+            });
+        }
+    }
+
+    // Package loading and display functionality
+    async function loadMainPackages() {
+        try {
+            const response = await fetch('php/get_main_packages.php');
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                renderPackages('domestic-packages', data.domestic);
+                renderPackages('international-packages', data.international);
+            } else {
+                console.error('Failed to load packages:', data.message);
+                loadFallbackPackages();
+            }
+        } catch (error) {
+            console.error('Error loading packages:', error);
+            loadFallbackPackages();
+        }
+    }
+    
+    function renderPackages(containerId, packages) {
+        const container = document.getElementById(containerId);
+        if (!container || !packages) return;
+        
+        container.innerHTML = packages.map(pkg => `
+            <div class="package-card">
+                <img src="${pkg.img}" alt="${pkg.name}">
+                <div class="package-info">
+                    <h3>${pkg.name}</h3>
+                    <div class="package-desc">${pkg.desc}</div>
+                    <div class="package-price">₹${pkg.price.toLocaleString('en-IN')} per person</div>
+                    <div class="package-actions">
+                        <button class="btn view-package-btn" onclick="showMainPackageDetails('${pkg.name}')">View Details</button>
+                        <button class="btn book-package-btn" onclick="handlePackageBookNow('${pkg.name}')">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function loadFallbackPackages() {
+        const domesticContainer = document.getElementById('domestic-packages');
+        const internationalContainer = document.getElementById('international-packages');
+        
+        if (domesticContainer) {
+            domesticContainer.innerHTML = `
+                <div class="package-card">
+                    <img src="https://th.bing.com/th/id/OIP.RGpdb3FKmZ07rSFIvoaEtAHaE8?w=301&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Goa Beach Getaway">
+                    <div class="package-info">
+                        <h3>Goa Beach Getaway</h3>
+                        <div class="package-desc">5 days, 4 nights. Explore pristine beaches, Portuguese heritage, and vibrant nightlife.</div>
+                        <div class="package-price">₹18,999 per person</div>
+                        <div class="package-actions">
+                            <button class="btn view-package-btn" onclick="showMainPackageDetails('Goa Beach Getaway')">View Details</button>
+                            <button class="btn book-package-btn" onclick="handlePackageBookNow('Goa Beach Getaway')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (internationalContainer) {
+            internationalContainer.innerHTML = `
+                <div class="package-card">
+                    <img src="https://www.gibsons.co.uk/wp-content/uploads/2023/12/Dubai-400x500.jpg" alt="Dubai Luxury Tour">
+                    <div class="package-info">
+                        <h3>Dubai Luxury Tour</h3>
+                        <div class="package-desc">4 days, 3 nights. Burj Khalifa, desert safari, and city tour.</div>
+                        <div class="package-price">₹37,999 per person</div>
+                        <div class="package-actions">
+                            <button class="btn view-package-btn" onclick="showMainPackageDetails('Dubai Luxury Tour')">View Details</button>
+                            <button class="btn book-package-btn" onclick="handlePackageBookNow('Dubai Luxury Tour')">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    async function showMainPackageDetails(packageName) {
+        // Since we don't have a separate package endpoint, we'll create a modal with the basic info
+        // and use the package data we already have
+        const packageData = {
+            name: packageName,
+            img: 'https://images.unsplash.com/photo-1502602898535-0b7b5b0b0b0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Default image
+            desc: 'Amazing package with unique experiences and beautiful destinations.',
+            duration: '5 Days / 4 Nights',
+            meals: 'Included',
+            hotels: 'Premium Hotels',
+            price: 25000 + Math.floor(Math.random() * 20000)
+        };
+        
+        // Try to find the package in our loaded data
+        const domesticPackages = document.querySelectorAll('#domestic-packages .package-card');
+        const internationalPackages = document.querySelectorAll('#international-packages .package-card');
+        
+        // Search for the package and get its data
+        let foundPackage = null;
+        
+        // Check domestic packages
+        domesticPackages.forEach(card => {
+            const name = card.querySelector('h3').textContent;
+            if (name === packageName) {
+                const img = card.querySelector('img').src;
+                const desc = card.querySelector('.package-desc').textContent;
+                const priceText = card.querySelector('.package-price').textContent;
+                const price = parseInt(priceText.replace(/[^\d]/g, ''));
+                foundPackage = { name, img, desc, price, duration: '5 Days / 4 Nights', meals: 'Included', hotels: 'Premium Hotels' };
+            }
+        });
+        
+        // Check international packages
+        if (!foundPackage) {
+            internationalPackages.forEach(card => {
+                const name = card.querySelector('h3').textContent;
+                if (name === packageName) {
+                    const img = card.querySelector('img').src;
+                    const desc = card.querySelector('.package-desc').textContent;
+                    const priceText = card.querySelector('.package-price').textContent;
+                    const price = parseInt(priceText.replace(/[^\d]/g, ''));
+                    foundPackage = { name, img, desc, price, duration: '5 Days / 4 Nights', meals: 'Included', hotels: 'Premium Hotels' };
+                }
+            });
+        }
+        
+        if (foundPackage) {
+            showMainPackageModal(foundPackage);
+        } else {
+            showMainPackageModal(packageData);
+        }
+    }
+    
+    function showMainPackageModal(pkg) {
+        const modal = document.createElement('div');
+        modal.className = 'package-modal';
+        modal.style.cssText = `
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 12px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+                <span style="position: absolute; right: 20px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; z-index: 1001; color: #333; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" onclick="this.closest('.package-modal').remove()">&times;</span>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="height: 300px; background-size: cover; background-position: center; border-radius: 12px 12px 0 0; background-image: url('${pkg.img}')"></div>
+                    <div style="padding: 30px;">
+                        <h2 style="color: #185a9d; margin-bottom: 10px;">${pkg.name}</h2>
+                        <p style="color: #666; margin-bottom: 15px;">📦 Package</p>
+                        <p style="line-height: 1.6; margin-bottom: 20px;">${pkg.desc}</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">⏱️ Duration</h4>
+                                <p>${pkg.duration || '5 Days / 4 Nights'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">🍽️ Meals</h4>
+                                <p>${pkg.meals || 'Included'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">🏨 Hotels</h4>
+                                <p>${pkg.hotels || 'Premium Hotels'}</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <h4 style="color: #0077cc; margin-bottom: 10px;">💰 Price</h4>
+                                <p>₹${pkg.price.toLocaleString('en-IN')} per person</p>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 1.5em; font-weight: bold; color: #185a9d; margin-bottom: 20px; text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                            ₹${pkg.price.toLocaleString('en-IN')} per person
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 1;" onclick="handlePackageBookNow('${pkg.name}')">Book This Package</button>
+                            <button style="background: #666; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;" onclick="this.closest('.package-modal').remove()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Close modal when clicking outside
+        modal.onclick = function(e) {
+            if (e.target === modal) modal.remove();
+        };
+    }
+    
+    async function handlePackageBookNow(packageName) {
+        const loggedIn = await isUserLoggedIn();
+        if (!loggedIn) {
+            // Show modal if present, else alert
+            const modal = document.getElementById('login-required-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                const closeBtn = document.getElementById('close-login-required-modal');
+                if (closeBtn) {
+                    closeBtn.onclick = function() {
+                        modal.style.display = 'none';
+                    };
+                }
+                // Also update the modal message
+                const msg = modal.querySelector('p');
+                if (msg) msg.textContent = 'You need to be logged in to make a booking. Please login or register first.';
+            } else {
+                alert('You need to be logged in to make a booking. Please login or register first.');
+            }
+            return;
+        }
+        // If logged in, proceed to package booking
+        goToPackageBooking(packageName);
+    }
+    
+    async function goToPackageBooking(packageName) {
+        // Check if user is logged in
+        try {
+            const response = await fetch('php/session_status.php');
+            const data = await response.json();
+            
+            if (!data.logged_in) {
+                localStorage.setItem('login_redirect', window.location.pathname);
+                localStorage.setItem('login_message', 'Please login to book a package.');
+                window.location.href = 'login.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            localStorage.setItem('login_redirect', window.location.pathname);
+            localStorage.setItem('login_message', 'Please login to book a package.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Redirect to new package booking page with package parameters
+        window.location.href = `package_booking.html?type=package&name=${encodeURIComponent(packageName)}`;
+    }
+
+    // Main Page Booking Flow Variables
+    let mainBookingData = {
+        source: '',
+        destination: '',
+        date: '',
+        num_travelers: 1,
+        selected_mode: '',
+        selected_fare: 0,
+        contact_name: '',
+        contact_mobile: '',
+        contact_email: '',
+        travelers: [],
+        otp_verified: false
+    };
+    
+    let mainCurrentStep = 1;
+    
+    // Main Page Booking Flow Functions
+    function showMainStep(step) {
+        console.log('Showing step:', step); // Debug log
+        
+        // Hide all steps
+        document.querySelectorAll('.booking-step').forEach(s => s.style.display = 'none');
+        
+        // Show current step
+        const stepElement = document.getElementById(`step-${step}-content`);
+        if (stepElement) {
+            stepElement.style.display = 'block';
+            console.log('Step element found and shown'); // Debug log
+        } else {
+            console.error('Step element not found:', `step-${step}-content`); // Debug log
+        }
+        
+        // Update step indicators
+        document.querySelectorAll('.step').forEach(s => {
+            s.classList.remove('active', 'completed');
+        });
+        
+        for (let i = 1; i <= step; i++) {
+            const stepEl = document.getElementById(`step-${i}`);
+            if (stepEl) {
+                if (i < step) {
+                    stepEl.classList.add('completed');
+                } else if (i === step) {
+                    stepEl.classList.add('active');
+                }
+            }
+        }
+        
+        mainCurrentStep = step;
+    }
+    
+    // Email OTP Functions
+    async function sendMainOTP() {
+        const contactName = document.getElementById('contact-name').value.trim();
+        const contactMobile = document.getElementById('contact-mobile').value.trim();
+        const contactEmail = document.getElementById('contact-email').value.trim();
+        if (!contactName || !contactMobile || !contactEmail) {
+            showMainAlert('Please fill in all contact details', 'danger');
+            return;
+        }
+        if (!isValidEmail(contactEmail)) {
+            showMainAlert('Please enter a valid email address', 'danger');
+            return;
+        }
+        if (!isValidMobile(contactMobile)) {
+            showMainAlert('Please enter a valid 10-digit mobile number', 'danger');
+            return;
+        }
+        mainBookingData.contact_name = contactName;
+        mainBookingData.contact_mobile = contactMobile;
+        mainBookingData.contact_email = contactEmail;
+        try {
+            const response = await fetch('php/send_booking_otp.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: contactEmail, mobile: contactMobile, name: contactName })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                showMainAlert('OTP sent successfully to your email', 'success');
+                document.getElementById('main-otp-section').style.display = 'block';
+                initializeMainOTPInputs();
+            } else {
+                showMainAlert(data.message || 'Failed to send OTP', 'danger');
+            }
+        } catch (error) {
+            showMainAlert('Failed to send OTP. Please try again.', 'danger');
+        }
+    }
+    
+    async function verifyMainOTP() {
+        const otpInputs = document.querySelectorAll('.main-otp-digit');
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
+        if (otp.length !== 6) {
+            showMainAlert('Please enter the complete 6-digit OTP', 'danger');
+            return;
+        }
+        try {
+            const response = await fetch('php/verify_booking_otp.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: mainBookingData.contact_email, otp: otp })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                mainBookingData.otp_verified = true;
+                showMainAlert('Email verified successfully!', 'success');
+                setTimeout(() => { showMainStep(3); updateMainTravelerForms(); }, 1000);
+            } else {
+                showMainAlert(data.message || 'Invalid OTP', 'danger');
+            }
+        } catch (error) {
+            showMainAlert('Failed to verify OTP. Please try again.', 'danger');
+        }
+    }
+    
+    async function resendMainOTP() { await sendMainOTP(); }
+    
+    function initializeMainOTPInputs() {
+        const otpInputs = document.querySelectorAll('.main-otp-digit');
+        
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                if (e.target.value.length === 1) {
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && e.target.value.length === 0) {
+                    if (index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+    }
+    
+    // Traveler Details Functions
+    function updateMainTravelerForms() {
+        const container = document.getElementById('main-traveler-fields');
+        const numTravelers = mainBookingData.num_travelers;
+        
+        container.innerHTML = '';
+        
+        for (let i = 0; i < numTravelers; i++) {
+            container.innerHTML += `
+                <div class="traveler-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e9ecef;">
+                    <h4 style="color: #0077cc; margin-bottom: 15px;">Traveler ${i + 1}</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" class="traveler-name" data-index="${i}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Age:</label>
+                            <input type="number" class="traveler-age" data-index="${i}" min="1" max="120" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gender:</label>
+                            <select class="traveler-gender" data-index="${i}" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    function proceedToMainPayment() {
+        // Collect traveler details
+        const travelers = [];
+        const travelerCards = document.querySelectorAll('.traveler-card');
+        
+        for (let i = 0; i < travelerCards.length; i++) {
+            const card = travelerCards[i];
+            const name = card.querySelector('.traveler-name').value.trim();
+            const age = card.querySelector('.traveler-age').value;
+            const gender = card.querySelector('.traveler-gender').value;
+            
+            if (!name || !age || !gender) {
+                showMainAlert(`Please fill all details for Traveler ${i + 1}`, 'danger');
+                return;
+            }
+            
+            travelers.push({ name, age, gender });
+        }
+        
+        mainBookingData.travelers = travelers;
+        
+        // Show payment summary
+        showMainPaymentSummary();
+        showMainStep(4);
+    }
+    
+    function showMainPaymentSummary() {
+        const summary = document.getElementById('main-payment-summary');
+        const totalAmount = mainBookingData.selected_fare;
+        // Get current wallet balance
+        fetch('php/session_status.php')
+            .then(res => res.json())
+            .then(data => {
+                const walletBalance = parseFloat(data.wallet_balance) || 0;
+                const requiredDemoAmount = 1; // Only ₹1 needed for demo/test
+                const canPayWithWallet = walletBalance >= requiredDemoAmount;
+                // Build traveler names string
+                const travelerNames = (mainBookingData.travelers && mainBookingData.travelers.length > 0)
+                    ? mainBookingData.travelers.map(t => t.name).join(', ')
+                    : mainBookingData.num_travelers;
+                // Build contact info string
+                const contactInfo = `${mainBookingData.contact_name}${mainBookingData.contact_mobile ? ' (' + mainBookingData.contact_mobile + ')' : ''}${mainBookingData.contact_email ? ', ' + mainBookingData.contact_email : ''}`;
+                summary.innerHTML = `
+                    <h4 style="color: #0077cc;">Booking Summary</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div class="info-label">From:</div><div class="info-value">${mainBookingData.source}</div>
+                        <div class="info-label">To:</div><div class="info-value">${mainBookingData.destination}</div>
+                        <div class="info-label">Date:</div><div class="info-value">${mainBookingData.date}</div>
+                        <div class="info-label">Mode:</div><div class="info-value">${mainBookingData.selected_mode.toUpperCase()}</div>
+                        <div class="info-label">Travelers:</div><div class="info-value">${travelerNames}</div>
+                        <div class="info-label">Contact:</div><div class="info-value">${contactInfo}</div>
+                    </div>
+                    <div class="wallet-info">
+                        <span><span class="info-label">💰 Wallet Information</span> <span class="balance">Current Balance: ₹${walletBalance.toLocaleString()}</span></span>
+                        <span class="status">${canPayWithWallet ? '✅ Sufficient Balance' : '❌ Insufficient Balance'}</span>
+                    </div>
+                    <div class="total-amount">
+                        <span>Total Amount:</span>
+                        <span>₹${totalAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div style="font-size: 14px; color: #666; margin-top: 5px;">
+                        ${canPayWithWallet ? 'Payment will be deducted from your wallet (Demo/Test: Only ₹1 will be charged)' : 'Amount will be added to your wallet first, then deducted for booking (Demo/Test: Only ₹1 will be charged)'}
+                    </div>
+                `;
+                // Update payment button text and event
+                const paymentBtn = document.getElementById('payment-btn');
+                if (paymentBtn) {
+                    if (canPayWithWallet) {
+                        paymentBtn.textContent = `Pay ₹1 (Wallet)`;
+                        paymentBtn.className = 'btn btn-success';
+                    } else {
+                        paymentBtn.textContent = `Add ₹1 to Wallet (Demo/Test Payment)`;
+                        paymentBtn.className = 'btn btn-warning';
+                    }
+                    paymentBtn.onclick = processMainPayment;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching wallet balance:', error);
+                // Fallback summary without wallet info
+                summary.innerHTML = `
+                    <h4>Booking Summary</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div><strong>From:</strong> ${mainBookingData.source}</div>
+                        <div><strong>To:</strong> ${mainBookingData.destination}</div>
+                        <div><strong>Date:</strong> ${mainBookingData.date}</div>
+                        <div><strong>Mode:</strong> ${mainBookingData.selected_mode.toUpperCase()}</div>
+                        <div><strong>Travelers:</strong> ${mainBookingData.num_travelers}</div>
+                        <div><strong>Contact:</strong> ${mainBookingData.contact_name}</div>
+                    </div>
+                    <div style="border-top: 2px solid #ddd; padding-top: 15px; margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;">
+                            <span>Total Amount:</span>
+                            <span>₹${totalAmount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+                // Update payment button text for fallback
+                const paymentBtn = document.getElementById('payment-btn');
+                if (paymentBtn) {
+                    paymentBtn.textContent = `Pay ₹${totalAmount.toLocaleString()} (Wallet)`;
+                    paymentBtn.className = 'btn btn-success';
+                    paymentBtn.onclick = processMainPayment;
+                }
+            });
+    }
+    
+    // Process payment using wallet balance
+    async function processWalletPayment() {
+        try {
+            const response = await fetch('php/process_wallet_booking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ booking_data: mainBookingData })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                showMainAlert('Booking completed successfully using wallet!', 'success');
+                updateWalletBalanceDisplay();
+                showTicketPreviewModal(mainBookingData, data.booking_id, mainBookingData.selected_fare);
+                resetMainBookingForm();
+            } else {
+                showMainAlert(data.message || 'Booking failed', 'danger');
+                updateWalletBalanceDisplay();
+            }
+        } catch (error) {
+            showMainAlert('Failed to process wallet payment', 'danger');
+        }
+    }
+    
+    // Process wallet top-up
+    async function processWalletTopUp(requiredAmount) {
+        try {
+            const sessionResponse = await fetch('php/session_status.php');
+            const sessionData = await sessionResponse.json();
+            const currentBalance = parseFloat(sessionData.wallet_balance) || 0;
+            const shortfall = 1;
+            const orderResponse = await fetch('php/create_wallet_order.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: shortfall })
+            });
+            const orderData = await orderResponse.json();
+            if (orderData.status === 'success') {
+                const options = {
+                    key: orderData.key_id,
+                    amount: orderData.amount * 100,
+                    currency: 'INR',
+                    name: 'TravelPlanner',
+                    description: `Wallet Top-up for booking (Demo/Test Payment: ₹1)`,
+                    order_id: orderData.order_id,
+                    handler: function(response) { verifyWalletTopUp(response, requiredAmount); },
+                    prefill: {
+                        name: mainBookingData.contact_name,
+                        email: mainBookingData.contact_email,
+                        contact: mainBookingData.contact_mobile
+                    },
+                    theme: { color: '#0077cc' }
+                };
+                const rzp = new Razorpay(options);
+                rzp.open();
+                showMainAlert('Please complete the wallet top-up of ₹1 (Demo/Test Payment) to proceed with your booking.', 'info');
+            } else {
+                showMainAlert('Failed to create wallet top-up order: ' + (orderData.message || 'Unknown error'), 'danger');
+            }
+        } catch (error) {
+            showMainAlert('Failed to create wallet top-up order', 'danger');
+        }
+    }
+    
+    // Verify wallet top-up payment
+    async function verifyWalletTopUp(response, requiredAmount) {
+        try {
+            const verifyResponse = await fetch('php/verify_wallet_payment.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            });
+            const verifyData = await verifyResponse.json();
+            if (verifyData.status === 'success') {
+                showMainAlert(`Wallet credited with ₹${verifyData.amount_added}! New balance: ₹${verifyData.new_balance}`, 'success');
+                updateWalletBalanceDisplay();
+                setTimeout(() => { processWalletPayment(); }, 1500);
+            } else {
+                showMainAlert('Wallet top-up failed: ' + verifyData.message, 'danger');
+                updateWalletBalanceDisplay();
+            }
+        } catch (error) {
+            showMainAlert('Failed to verify wallet top-up', 'danger');
+        }
+    }
+    
+    function displayTicket(ticketHtml, ticketPdf, bookingDetails) {
+        // Create ticket modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+        `;
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '×';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10001;
+        `;
+        closeBtn.onclick = () => {
+            document.body.removeChild(modal);
+            resetMainBookingForm();
+        };
+        
+        const downloadBtn = document.createElement('button');
+        downloadBtn.innerHTML = '📥 Download Ticket';
+        downloadBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 10001;
+        `;
+        downloadBtn.onclick = () => {
+            downloadTicket(ticketPdf, bookingDetails, 'html');
+        };
+        
+        // Add email notification
+        const emailNotification = document.createElement('div');
+        emailNotification.style.cssText = `
+            position: absolute;
+            top: 50px;
+            left: 15px;
+            right: 15px;
+            background: #d4edda;
+            color: #155724;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            font-size: 14px;
+            z-index: 10001;
+        `;
+        emailNotification.innerHTML = `
+            <strong>📧 Email Sent!</strong> Your ticket has been automatically sent to <strong>${bookingDetails.contact_email}</strong>
+        `;
+        
+        const ticketContent = document.createElement('div');
+        ticketContent.innerHTML = atob(ticketHtml);
+        ticketContent.style.cssText = `
+            padding: 20px;
+            margin-top: 100px;
+        `;
+        
+        modalContent.appendChild(closeBtn);
+        modalContent.appendChild(downloadBtn);
+        modalContent.appendChild(emailNotification);
+        modalContent.appendChild(ticketContent);
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+    }
+    
+    function downloadTicket(ticketPdf, bookingDetails) {
+        const pdfData = atob(ticketPdf);
+        const blob = new Blob([pdfData], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ticket_${bookingDetails.booking_id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    function resetMainBookingForm() {
+        // Reset form
+        document.getElementById('booking-form').reset();
+        
+        // Hide all steps except first
+        showMainStep(1);
+        
+        // Hide fare options
+        document.getElementById('fare-options').style.display = 'none';
+        
+        // Reset booking data
+        mainBookingData = {
+            source: '',
+            destination: '',
+            date: '',
+            num_travelers: 1,
+            selected_mode: '',
+            selected_fare: 0,
+            contact_name: '',
+            contact_mobile: '',
+            contact_email: '',
+            travelers: [],
+            otp_verified: false
+        };
+        
+        // Clear OTP section
+        document.getElementById('main-otp-section').style.display = 'none';
+        document.querySelectorAll('.main-otp-digit').forEach(input => input.value = '');
+        
+        // Clear traveler fields
+        document.getElementById('main-traveler-fields').innerHTML = '';
+        
+        // Clear payment summary
+        document.getElementById('main-payment-summary').innerHTML = '';
+    }
+    
+    // Utility Functions
+    function showMainAlert(message, type) {
+        const container = document.getElementById('main-alert-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.style.cssText = `
+            background: ${type === 'success' ? '#d4edda' : type === 'danger' ? '#f8d7da' : '#fff3cd'};
+            color: ${type === 'success' ? '#155724' : type === 'danger' ? '#721c24' : '#856404'};
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid ${type === 'success' ? '#c3e6cb' : type === 'danger' ? '#f5c6cb' : '#ffeaa7'};
+        `;
+        alertDiv.textContent = message;
+        
+        container.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+    
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(email);
+        console.log('Email validation:', email, isValid); // Debug log
+        return isValid;
+    }
+    
+    function isValidMobile(mobile) {
+        const mobileRegex = /^[6-9][0-9]{9}$/;
+        const isValid = mobileRegex.test(mobile);
+        console.log('Mobile validation:', mobile, isValid); // Debug log
+        return isValid;
+    }
+    
+    // Initialize main booking system
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum date for booking
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').setAttribute('min', today);
+        
+        // Override the existing booking form submission
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.onsubmit = function(e) {
+                e.preventDefault();
+                showFareOptions();
+            };
+        }
+    });
+
+    // Add this after the fare options are shown
+    setTimeout(() => {
+        document.querySelectorAll('.select-fare-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+                const fareText = this.closest('.fare-card').querySelector('.fare-price').textContent;
+                const fare = parseInt(fareText.replace(/[^\d]/g, ''));
+                
+                mainBookingData.selected_mode = mode;
+                mainBookingData.selected_fare = fare;
+                
+                // Hide fare options and show step 2
+                document.getElementById('fare-options').style.display = 'none';
+                document.getElementById('step-1-content').style.display = 'none';
+                document.getElementById('step-2-content').style.display = 'block';
+                
+                // Update step indicators
+                document.getElementById('step-1').classList.add('completed');
+                document.getElementById('step-2').classList.add('active');
+            });
+        });
+    }, 100);
+
+    function setupPlannerToggles() {
+        // This function was referenced but not defined
+        // Add planner toggle setup if needed
+        console.log('setupPlannerToggles called');
+    }
+
+    // Add missing functions to prevent errors
+    function setupBookingForm() {
+        // This function is called but not defined, so we'll create it
+        console.log('setupBookingForm called');
+    }
+    
+    function setupAuthUI() {
+        // Directly implement authentication UI logic
+        console.log('setupAuthUI called');
+        
+        // Setup logout handlers and profile menu
+        setupLogoutHandlers();
+        setupProfileMenu();
+        
+        // Check session status and update UI
+        fetch('php/session_status.php')
+            .then(res => res.json())
+            .then(data => {
+                console.log('Session status:', data);
+                if (data.logged_in) {
+                    // Map is_admin to userType for compatibility
+                    const userType = data.is_admin == 1 ? 'admin' : 'user';
+                    updateUIForLoggedInUser(data.username, userType);
+                } else {
+                    updateUIForLoggedOutUser();
+                }
+            })
+            .catch(err => {
+                console.error('Session check failed:', err);
+                updateUIForLoggedOutUser();
+            });
+    }
+    
+    // Update UI for logged in user
+    function updateUIForLoggedInUser(username, userType) {
+        console.log('Updating UI for logged in user:', username, userType);
+        
+        const loginLink = document.getElementById('login-link');
+        const profileMenu = document.querySelector('.profile-menu');
+        const welcomeUser = document.getElementById('welcome-user');
+        const authSection = document.getElementById('auth');
+        
+        if (loginLink) loginLink.style.display = 'none';
+        if (profileMenu) profileMenu.style.display = 'block';
+        if (welcomeUser) {
+            welcomeUser.textContent = `Welcome, ${username}!`;
+            welcomeUser.style.display = 'block';
+        }
+        if (authSection) authSection.style.display = 'none';
+        
+        // Update localStorage
+        localStorage.setItem('loggedInUser', username);
+        localStorage.setItem('isAdminUser', userType === 'admin' ? '1' : '0');
+        
+        // Update wallet balance display
+        updateWalletBalanceDisplay();
+    }
+    
+    // Update wallet balance display
+    async function updateWalletBalanceDisplay() {
+        try {
+            const response = await fetch('php/session_status.php');
+            const data = await response.json();
+            
+            if (data.logged_in) {
+                const walletBalance = parseFloat(data.wallet_balance) || 0;
+                
+                // Add wallet balance to navbar if not already present
+                let walletDisplay = document.getElementById('wallet-balance-display');
+                if (!walletDisplay) {
+                    walletDisplay = document.createElement('div');
+                    walletDisplay.id = 'wallet-balance-display';
+                    walletDisplay.style.cssText = `
+                        background: linear-gradient(135deg, #28a745, #20c997);
+                        color: white;
+                        padding: 8px 15px;
+                        border-radius: 20px;
+                        font-weight: 600;
+                        font-size: 14px;
+                        margin-right: 15px;
+                        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+                    `;
+                    
+                    const navAuth = document.querySelector('.nav-auth');
+                    if (navAuth) {
+                        navAuth.insertBefore(walletDisplay, navAuth.firstChild);
+                    }
+                }
+                
+                walletDisplay.innerHTML = `💰 ₹${walletBalance.toLocaleString()}`;
+            }
+        } catch (error) {
+            console.error('Error updating wallet balance display:', error);
+        }
+    }
+    
+    // Update UI for logged out user
+    function updateUIForLoggedOutUser() {
+        console.log('Updating UI for logged out user');
+        
+        const loginLink = document.getElementById('login-link');
+        const profileMenu = document.querySelector('.profile-menu');
+        const welcomeUser = document.getElementById('welcome-user');
+        const authSection = document.getElementById('auth');
+        
+        if (loginLink) loginLink.style.display = 'block';
+        if (profileMenu) profileMenu.style.display = 'none';
+        if (welcomeUser) {
+            welcomeUser.textContent = '';
+            welcomeUser.style.display = 'none';
+        }
+        if (authSection) authSection.style.display = 'block';
+        
+        // Remove wallet balance display
+        const walletDisplay = document.getElementById('wallet-balance-display');
+        if (walletDisplay) {
+            walletDisplay.remove();
+        }
+        
+        // Clear localStorage
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('isAdminUser');
+        localStorage.removeItem('user_logged_in');
+    }
+    
+    function setupPasswordReset() {
+        // This function is called but not defined, so we'll create it
+        console.log('setupPasswordReset called');
+    }
+    
+    // Setup logout handlers
+    function setupLogoutHandlers() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleLogout();
+            });
+        }
+    }
+    
+    // Handle logout
+    function handleLogout() {
+        fetch('php/logout.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    localStorage.removeItem('loggedInUser');
+                    localStorage.removeItem('isAdminUser');
+                    localStorage.removeItem('user_logged_in');
+                    updateUIForLoggedOutUser();
+                    window.location.href = 'index.html';
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem('loggedInUser');
+                localStorage.removeItem('isAdminUser');
+                localStorage.removeItem('user_logged_in');
+                updateUIForLoggedOutUser();
+                window.location.href = 'index.html';
+            });
+    }
+    
+    // Setup profile menu
+    function setupProfileMenu() {
+        const profileLink = document.getElementById('profile-link');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        
+        if (profileLink && profileDropdown) {
+            profileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!profileLink.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        }
+        
+        // Setup wallet management link
+        const walletManagementLink = document.getElementById('wallet-management-link');
+        if (walletManagementLink) {
+            walletManagementLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'wallet.html';
+            });
+        }
+    }
+
+    // Remove page-load login enforcement
+    // Add login check to booking/fare actions
+    function addLoginCheckToBookingButtons() {
+        // Example: for all buttons with class 'book-now-btn' or 'show-fares-btn'
+        const bookBtns = document.querySelectorAll('.book-now-btn, .show-fares-btn');
+        bookBtns.forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                try {
+                    const res = await fetch('php/session_status.php');
+                    const data = await res.json();
+                    if (!data.logged_in) {
+                        localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+                        localStorage.setItem('login_message', 'Please login to book or view fares.');
+                        // Show modal instead of direct redirect
+                        const modal = document.getElementById('login-required-modal');
+                        modal.style.display = 'flex';
+                        document.getElementById('close-login-required-modal').onclick = function() {
+                            modal.style.display = 'none';
+                            window.location.href = 'login.html';
+                        };
+                        return;
+                    }
+                    // If logged in, proceed with original action
+                    window.location.href = btn.getAttribute('href') || btn.dataset.href || '#';
+                } catch (e) {
+                    localStorage.setItem('login_redirect', window.location.pathname + window.location.search);
+                    localStorage.setItem('login_message', 'Please login to book or view fares.');
+                    // Show modal instead of direct redirect
+                    const modal = document.getElementById('login-required-modal');
+                    modal.style.display = 'flex';
+                    document.getElementById('close-login-required-modal').onclick = function() {
+                        modal.style.display = 'none';
+                        window.location.href = 'login.html';
+                    };
+                }
+            });
+        });
+    }
+    document.addEventListener('DOMContentLoaded', addLoginCheckToBookingButtons);
+
+    // Payment Processing
+    async function processMainPayment() {
+        // Show loading overlay
+        document.getElementById('main-loading').style.display = 'flex';
+        try {
+            // Check login status
+            const sessionRes = await fetch('php/session_status.php');
+            const sessionData = await sessionRes.json();
+            if (!sessionData.logged_in) {
+                showMainAlert('Please login to complete the booking.', 'danger');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            const walletBalance = parseFloat(sessionData.wallet_balance) || 0;
+            const requiredDemoAmount = 1; // Only ₹1 needed for demo/test
+            if (walletBalance >= requiredDemoAmount) {
+                await processWalletPayment(); // Direct wallet deduction, no Razorpay
+            } else {
+                await processWalletTopUp(requiredDemoAmount); // Only open Razorpay if not enough
+            }
+        } catch (error) {
+            showMainAlert('Payment processing failed. Please try again.', 'danger');
+            console.error(error);
+        } finally {
+            document.getElementById('main-loading').style.display = 'none';
+        }
+    }
+
+    // --- Finalized Ticket Modal and Actions (from booking.html) ---
+    function showTicketPreviewModal(bookingData, bookingId, totalAmount) {
+        // Remove any existing modal
+        const oldModal = document.getElementById('ticket-preview-modal');
+        if (oldModal) oldModal.remove();
+
+        // Always use the latest mainBookingData for download/email
+        window._latestBookingData = bookingData;
+
+        // Generate ticket HTML
+        const ticketHtml = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.id = 'ticket-preview-modal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;`;
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 15px; max-width: 900px; width: 95vw; max-height: 95vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <button id="close-ticket-modal" style="position: absolute; top: 15px; right: 20px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; cursor: pointer;">&times;</button>
+                <div id="ticket-preview-content">${ticketHtml}</div>
+                <div style="display: flex; justify-content: center; gap: 15px; margin: 30px 0 20px 0;">
+                    <button class="btn" style="background: #28a745; color: white;" onclick='downloadTicketHtml(window._latestBookingData, "${bookingId}", ${totalAmount})'>Download Ticket</button>
+                    <button class="btn" style="background: #0077cc; color: white;" onclick='printTicketHtml(window._latestBookingData, "${bookingId}", ${totalAmount})'>Print Ticket</button>
+                    <button class="btn" style="background: #ffc107; color: #212529;" onclick='sendTicketEmail(window._latestBookingData, "${bookingId}", ${totalAmount})'>Send to Email</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('close-ticket-modal').onclick = () => modal.remove();
+    }
+
+    function generateSimpleTicketHtml(bookingData, bookingId, totalAmount) {
+        // Generate transport number based on mode
+        function getTransportNumber(source, destination, mode) {
+            const sourceCode = (source || '').substring(0, 3).toUpperCase();
+            const destCode = (destination || '').substring(0, 3).toUpperCase();
+            if (mode === 'FLIGHT') {
+                return 'AI' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            } else if (mode === 'TRAIN') {
+                return '12' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            } else {
+                return 'BUS' + Math.floor(Math.random() * 900 + 100) + sourceCode + destCode;
+            }
+        }
+        function getSeatNumber(mode, travelerNumber) {
+            if (mode === 'FLIGHT') {
+                const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
+                const row = rows[(travelerNumber - 1) % 6];
+                const seat = Math.floor(Math.random() * 30) + 1;
+                return seat + row;
+            } else if (mode === 'TRAIN') {
+                const coach = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3'];
+                const coachType = coach[(travelerNumber - 1) % 6];
+                const berth = Math.floor(Math.random() * 72) + 1;
+                return coachType + '-' + berth;
+            } else {
+                return 'Seat ' + travelerNumber;
+            }
+        }
+        const source = bookingData.source || '';
+        const destination = bookingData.destination || '';
+        const date = bookingData.date || '';
+        const mode = (bookingData.selected_mode || '').toUpperCase();
+        const contactName = bookingData.contact_name || '';
+        const contactMobile = bookingData.contact_mobile || '';
+        const contactEmail = bookingData.contact_email || '';
+        const travelers = bookingData.travelers || [];
+        const transportNumber = getTransportNumber(source, destination, mode);
+        return `
+            <div class="ticket">
+                <div class="header" style="background: linear-gradient(135deg, #0077cc, #2193b0); color: white; padding: 30px; text-align: center;">
+                    <h1>TravelPlanner</h1>
+                    <p>Official Travel Ticket</p>
+                    <div style="margin-top: 15px;"><span class="status-badge" style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">CONFIRMED</span></div>
+                </div>
+                <div class="body" style="padding: 30px;">
+                    <div class="payment">
+                        <h3>Payment Confirmed</h3>
+                        <div><strong>Booking ID:</strong> ${bookingId}</div>
+                        <div><strong>Amount Paid:</strong> ₹1 (Test Payment)</div>
+                        <div><strong>Original Amount:</strong> ₹${totalAmount.toLocaleString()}</div>
+                        <div><strong>Booking Date:</strong> ${new Date().toLocaleString()}</div>
+                    </div>
+                    <div class="flight-details">
+                        <h3>Flight/Transport Details</h3>
+                        <div><strong>From:</strong> ${source}</div>
+                        <div><strong>To:</strong> ${destination}</div>
+                        <div><strong>Date:</strong> ${date}</div>
+                        <div><strong>Mode:</strong> ${mode}</div>
+                        <div><strong>${mode === 'FLIGHT' ? 'Flight' : mode === 'TRAIN' ? 'Train' : 'Bus'} No:</strong> ${transportNumber}</div>
+                    </div>
+                    <div class="section">
+                        <h3>Traveler Information</h3>
+                        <table class="traveler-table" style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th><th>${mode === 'FLIGHT' ? 'Flight' : mode === 'TRAIN' ? 'Train' : 'Bus'} No</th><th>Seat</th></tr>
+                            ${(travelers || []).map((traveler, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${traveler.name}</td>
+                                    <td>${traveler.age}</td>
+                                    <td>${traveler.gender}</td>
+                                    <td>${transportNumber}</td>
+                                    <td>${getSeatNumber(mode, i + 1)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                    <div class="section">
+                        <h3>Contact Information</h3>
+                        <div><strong>Name:</strong> ${contactName}</div>
+                        <div><strong>Mobile:</strong> ${contactMobile}</div>
+                        <div><strong>Email:</strong> ${contactEmail}</div>
+                    </div>
+                    <div class="section">
+                        <h3>Customer Support</h3>
+                        <div><strong>Helpline:</strong> +91 9130123270</div>
+                        <div><strong>Email:</strong> sarveshtravelplanner@gmail.com</div>
+                        <div><strong>WhatsApp:</strong> +91 9130123270</div>
+                    </div>
+                    <div class="footer" style="background: #333; color: white; padding: 20px; text-align: center;">
+                        <p><strong>Thank you for choosing TravelPlanner!</strong></p>
+                        <p>Have a safe and enjoyable journey</p>
+                        <p>Generated on: ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function downloadTicketHtml(bookingData, bookingId, totalAmount) {
+        // Always use the latest mainBookingData for download
+        bookingData = window._latestBookingData || bookingData;
+        const html = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `TravelPlanner_Ticket_${bookingId}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+
+    function printTicketHtml(bookingData, bookingId, totalAmount) {
+        const html = generateSimpleTicketHtml(bookingData, bookingId, totalAmount);
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    }
+
+    function sendTicketEmail(bookingData, bookingId, totalAmount) {
+        // Always use the latest mainBookingData for email
+        bookingData = window._latestBookingData || bookingData;
+        // Use the verified email by default
+        let emailTo = bookingData.contact_email || '';
+        let promptMsg = 'Enter the email address to send the ticket to:';
+        if (emailTo) {
+            promptMsg = `Send ticket to this email? (Edit if you want to send to a different address)\n${emailTo}`;
+        }
+        const userInput = prompt(promptMsg, emailTo);
+        if (!userInput || !/^\S+@\S+\.\S+$/.test(userInput)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+        // Always send the full bookingData (with travelers) to the backend
+        fetch('php/send_ticket_email.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingData, bookingId, totalAmount, emailTo: userInput })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Ticket sent successfully!');
+            } else {
+                alert('Failed to send ticket: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(() => {
+            alert('Failed to send ticket. Please try again.');
+        });
+    }
+
+    // Ensure booking OTP buttons work
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var sendOtpBtn = document.getElementById('send-otp-btn');
+        if (sendOtpBtn) sendOtpBtn.onclick = sendMainOTP;
+        var resendOtpBtn = document.getElementById('resend-otp-btn');
+        if (resendOtpBtn) resendOtpBtn.onclick = resendMainOTP;
+        var verifyOtpBtn = document.getElementById('verify-otp-btn');
+        if (verifyOtpBtn) verifyOtpBtn.onclick = verifyMainOTP;
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... existing code ...
+        var proceedToPaymentBtn = document.getElementById('proceed-to-payment-btn');
+        if (proceedToPaymentBtn) {
+            proceedToPaymentBtn.onclick = proceedToMainPayment;
+        }
+    });
+
+    // Profile menu toggle and links
+    (function() {
+        const profileLink = document.getElementById('my-profile-link');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileLink && profileDropdown) {
+            profileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', function(e) {
+                if (!profileLink.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        }
+        // Edit Profile link
+        const editProfileLink = document.getElementById('edit-profile-link');
+        if (editProfileLink) {
+            editProfileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'user_profile.html';
+            });
+        }
+    })();
+    </script>
+    <!-- Loading Overlay for Payment Processing -->
+    <div id="main-loading" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+      <div style="background:#fff; padding:32px 40px; border-radius:12px; box-shadow:0 4px 24px #0077cc22; text-align:center;">
+        <div class="spinner" style="margin-bottom:16px; border:4px solid #e0eafc; border-top:4px solid #0077cc; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;"></div>
+        <div style="color:#0077cc; font-weight:600;">Processing your payment...</div>
+      </div>
+    </div>
+    <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    </style>
+</body>
+</html> 

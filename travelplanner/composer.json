@@ -1,0 +1,8 @@
+{
+  "require": {
+    "mpdf/mpdf": "^8.1",
+    "phpmailer/phpmailer": "^6.10",
+    "razorpay/razorpay": "^2.9",
+    "endroid/qr-code": "^6.0"
+  }
+}

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Trip - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .booking-container {
+            max-width: 800px;
+            margin: 2em auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            padding: 2em;
+        }
+        .booking-header {
+            text-align: center;
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 2px solid #0077cc;
+        }
+        .booking-header h1 {
+            color: #0077cc;
+            margin-bottom: 0.5em;
+        }
+        .form-group {
+            margin-bottom: 1.5em;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8em;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1em;
+        }
+        .btn {
+            background: linear-gradient(135deg, #0077cc, #2193b0);
+            color: white;
+            padding: 1em 2em;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .success, .error {
+            padding: 1em;
+            border-radius: 8px;
+            margin: 1em 0;
+            font-weight: 600;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loader {
+            text-align: center;
+            padding: 2em;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0077cc;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1em;
+            color: #0077cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        
+        <div class="booking-header">
+            <h1>Book Your Trip</h1>
+            <p>Fill in your travel details to book your journey</p>
+        </div>
+
+        <form id="booking-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age *</label>
+                    <input type="number" id="age" name="age" min="1" max="120" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="gender">Gender *</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number *</label>
+                    <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="source">From (City) *</label>
+                    <input type="text" id="source" name="source" required>
+                </div>
+                <div class="form-group">
+                    <label for="destination">To (City) *</label>
+                    <input type="text" id="destination" name="destination" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date">Travel Date *</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="num_travelers">Number of Travelers *</label>
+                    <input type="number" id="num_travelers" name="num_travelers" min="1" max="10" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="type">Travel Type</label>
+                    <select id="type" name="type">
+                        <option value="domestic">Domestic</option>
+                        <option value="international">International</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transport_mode">Transport Mode</label>
+                    <select id="transport_mode" name="transport_mode">
+                        <option value="flight">Flight</option>
+                        <option value="train">Train</option>
+                        <option value="bus">Bus</option>
+                        <option value="car">Car</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="special_requirements">Special Requirements (Optional)</label>
+                <textarea id="special_requirements" name="special_requirements" rows="3" placeholder="Any special requirements or preferences..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">Book Now</button>
+        </form>
+
+        <div id="booking-result"></div>
+    </div>
+
+    <!-- Login Required Modal -->
+    <div id="login-required-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; text-align: center;">
+            <h3 style="color: #0077cc; margin-bottom: 20px;">Login Required</h3>
+            <p style="margin-bottom: 20px;">You need to be logged in to make a booking. Please login or register first.</p>
+            <button id="close-login-required-modal" class="btn" style="background: #0077cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingForm = document.getElementById('booking-form');
+            const bookingResult = document.getElementById('booking-result');
+
+            // Set minimum date to today
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                bookingResult.innerHTML = '<div class="loader"><div class="spinner"></div><p>Processing your booking...</p></div>';
+                
+                const formData = new FormData(bookingForm);
+                
+                // Add booking type
+                formData.append('booking_type', 'normal');
+                
+                fetch('php/book_normal.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        bookingResult.innerHTML = `
+                            <div class="success">
+                                <h3>✅ Booking Successful!</h3>
+                                <p><strong>Booking ID:</strong> ${data.booking_id}</p>
+                                <p><strong>Name:</strong> ${data.name}</p>
+                                <p><strong>From:</strong> ${data.source} <strong>To:</strong> ${data.destination}</p>
+                                <p><strong>Date:</strong> ${data.date}</p>
+                                <p><strong>Travelers:</strong> ${data.num_travelers}</p>
+                                <p><strong>Total Amount:</strong> ₹${data.total_amount}</p>
+                                <p>We'll contact you soon with more details!</p>
+                            </div>
+                        `;
+                        bookingForm.reset();
+                    } else {
+                        bookingResult.innerHTML = `
+                            <div class="error">
+                                <h3>❌ Booking Failed</h3>
+                                <p>${data.msg || 'An error occurred while processing your booking.'}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    bookingResult.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Booking Failed</h3>
+                            <p>An error occurred while processing your booking. Please try again.</p>
+                        </div>
+                    `;
+                });
+            });
+        });
+
+        // Add login check to booking button
+        function addLoginCheckToBookingButton() {
+            const bookingForm = document.getElementById('booking-form');
+            if (!bookingForm) return;
+            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            if (!submitBtn) return;
+            submitBtn.addEventListener('click', async function(e) {
+                if (!window._bookingLoginChecked) {
+                    e.preventDefault();
+                    try {
+                        const res = await fetch('php/session_status.php');
+                        const data = await res.json();
+                        if (!data.logged_in) {
+                            // Show modal instead of redirect
+                            const modal = document.getElementById('login-required-modal');
+                            if (modal) {
+                                modal.style.display = 'flex';
+                                document.getElementById('close-login-required-modal').onclick = function() {
+                                    modal.style.display = 'none';
+                                };
+                            } else {
+                                alert('You need to be logged in to make a booking. Please login or register first.');
+                            }
+                            return;
+                        }
+                        window._bookingLoginChecked = true;
+                        submitBtn.click();
+                    } catch (e) {
+                        // Show modal instead of redirect
+                        const modal = document.getElementById('login-required-modal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                            document.getElementById('close-login-required-modal').onclick = function() {
+                                modal.style.display = 'none';
+                            };
+                        } else {
+                            alert('You need to be logged in to make a booking. Please login or register first.');
+                        }
+                    }
+                } else {
+                    window._bookingLoginChecked = false;
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', addLoginCheckToBookingButton);
+    </script>
+</body>
+</html> 

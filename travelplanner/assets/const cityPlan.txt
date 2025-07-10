@@ -1,0 +1,86 @@
+const cityPlans = {
+  'paris': {
+    sights: [
+      { name: 'Eiffel Tower', cost: 25 },
+      { name: 'Louvre Museum', cost: 17 },
+      { name: 'Notre-Dame Cathedral', cost: 0 },
+      { name: 'Montmartre', cost: 0 },
+      { name: 'Seine River Cruise', cost: 15 },
+      { name: 'Palace of Versailles', cost: 20 },
+      { name: 'Sainte-Chapelle', cost: 10 }
+    ],
+    hotel: 12000,
+    food: 2500,
+    transport: 1000
+  },
+  'london': {
+    sights: [
+      { name: 'London Eye', cost: 30 },
+      { name: 'British Museum', cost: 0 },
+      { name: 'Tower of London', cost: 25 },
+      { name: 'Buckingham Palace', cost: 0 },
+      { name: 'Westminster Abbey', cost: 20 },
+      { name: 'St. Paul’s Cathedral', cost: 18 },
+      { name: 'Hyde Park', cost: 0 }
+    ],
+    hotel: 11000,
+    food: 2400,
+    transport: 900
+  },
+  'new_york': {
+    sights: [
+      { name: 'Statue of Liberty', cost: 20 },
+      { name: 'Central Park', cost: 0 },
+      { name: 'Empire State Building', cost: 38 },
+      { name: 'Metropolitan Museum of Art', cost: 25 },
+      { name: 'Times Square', cost: 0 },
+      { name: 'Brooklyn Bridge', cost: 0 },
+      { name: '9/11 Memorial & Museum', cost: 26 }
+    ],
+    hotel: 13000,
+    food: 3000,
+    transport: 1000
+  },
+  'tokyo': {
+    sights: [
+      { name: 'Tokyo Skytree', cost: 20 },
+      { name: 'Senso-ji Temple', cost: 0 },
+      { name: 'Meiji Shrine', cost: 0 },
+      { name: 'Tokyo Tower', cost: 15 },
+      { name: 'Ueno Zoo', cost: 6 },
+      { name: 'Shinjuku Gyoen National Garden', cost: 5 },
+      { name: 'Odaiba', cost: 0 }
+    ],
+    hotel: 10000,
+    food: 2200,
+    transport: 800
+  },
+  'dubai': {
+    sights: [
+      { name: 'Burj Khalifa', cost: 35 },
+      { name: 'Dubai Mall', cost: 0 },
+      { name: 'Dubai Fountain Show', cost: 0 },
+      { name: 'Palm Jumeirah', cost: 0 },
+      { name: 'Desert Safari', cost: 60 },
+      { name: 'Dubai Marina', cost: 0 },
+      { name: 'Dubai Museum', cost: 3 }
+    ],
+    hotel: 9000,
+    food: 2000,
+    transport: 700
+  },
+  'singapore': {
+    sights: [
+      { name: 'Marina Bay Sands SkyPark', cost: 20 },
+      { name: 'Gardens by the Bay', cost: 15 },
+      { name: 'Sentosa Island', cost: 0 },
+      { name: 'Universal Studios Singapore', cost: 60 },
+      { name: 'Singapore Zoo', cost: 35 },
+      { name: 'Chinatown', cost: 0 },
+      { name: 'Little India', cost: 0 }
+    ],
+    hotel: 8500,
+    food: 1800,
+    transport: 600
+  }
+};

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - TravelPlanner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .gallery-header h1 {
+            color: #0077cc;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .gallery-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 1.5rem 1rem 1rem 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+        
+        .gallery-caption h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .gallery-caption p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .gallery-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #0077cc;
+            border-radius: 25px;
+            background: transparent;
+            color: #0077cc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #0077cc;
+            color: white;
+        }
+        
+        /* .view-all-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 2rem auto 0 auto;
+            display: block;
+        }
+        
+        .view-all-btn:hover {
+            background: #218838;
+        } */
+        
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            text-align: center;
+        }
+        
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .lightbox-caption {
+            color: white;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .close-lightbox {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            color: white;
+        }
+        
+        .lightbox-nav button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .lightbox-nav button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .gallery-filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">TravelPlanner</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="destinations.html">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="gallery.html" class="active">Gallery</a></li>
+            <li><a href="booking.html">Booking</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+
+         
+        <div class="nav-auth">
+            <div id="welcome-user" class="welcome-user"></div>
+            <div id="login-link" class="auth-link">
+                <a href="login.html">Login</a>
+            </div>
+            <div class="profile-menu" style="display: none;">
+                <a href="#" id="profile-link" class="profile-link">
+                    <span class="profile-icon">👤</span>
+                    <span class="profile-text">My Profile</span>
+                    <span class="dropdown-arrow">▼</span>
+                </a>
+                <ul class="profile-dropdown">
+                    <li><a href="#" id="edit-profile-link">Edit Profile</a></li>
+                    <li><a href="php/mybookings.php">My Bookings</a></li>
+                    <li><a href="#" id="wallet-management-link">💰 Wallet Management</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="nav-toggler">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="gallery-container">
+        <div class="gallery-header">
+            <h1>Travel Gallery</h1>
+            <p>Explore stunning destinations from around the world</p>
+        </div>
+        
+        <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="beach">Beaches</button>
+            <button class="filter-btn" data-filter="mountain">Mountains</button>
+            <button class="filter-btn" data-filter="city">Cities</button>
+            <button class="filter-btn" data-filter="culture">Culture</button>
+            <button class="filter-btn" data-filter="nature">Nature</button>
+            <button class="filter-btn" data-filter="landmark">Landmarks</button>
+            <button class="filter-btn" data-filter="architecture">Architecture</button>
+        </div>
+        
+        <div class="gallery-grid" id="gallery-grid">
+            <!-- Gallery items will be dynamically added here -->
+        <!-- </div>
+        
+        <button id="view-all-gallery" class="view-all-btn">View All Gallery Images</button>
+    </div> -->
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="close-lightbox" id="close-lightbox">&times;</span>
+            <img src="" alt="" id="lightbox-img">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+            <div class="lightbox-nav">
+                <button id="prev-btn">&larr; Previous</button>
+                <span id="image-counter">1 of 20</span>
+                <button id="next-btn">Next &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Required Modal -->
+    <div id="login-required-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; text-align: center;">
+            <h3 style="color: #0077cc; margin-bottom: 20px;">Login Required</h3>
+            <p style="margin-bottom: 20px;">You need to be logged in to make a booking. Please login or register first.</p>
+            <button id="close-login-required-modal" class="btn" style="background: #0077cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Gallery data
+        const galleryItems = [
+            {
+                "src": "https://th.bing.com/th/id/OIP.WqCqk88XDajiv58i8waUGwHaD9?w=274&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Beautiful beaches of Goa",
+                "category": "beach",
+                "location": "Goa, India",
+                "description": "Pristine beaches with golden sand and crystal clear waters"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.bqJG_cItL3wtuwaQvAzhiQHaEe?w=270&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Majestic Himalayas",
+                "category": "mountain",
+                "location": "Himalayas, India",
+                "description": "Snow-capped peaks reaching towards the sky"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP._dpxdJcbfJnyecpAR4h9agHaE9?w=246&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Historic Delhi",
+                "category": "city",
+                "location": "Delhi, India",
+                "description": "Ancient monuments and modern city life"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.DmUuCIPQLurxIWCFiHDLjwHaEK?w=294&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Spiritual Varanasi",
+                "category": "culture",
+                "location": "Varanasi, India",
+                "description": "Sacred ghats along the holy Ganges River"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.Sd4kNeztzoJZErqY5PbV_AHaFj?w=252&h=189&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Backwaters of Kerala",
+                "category": "nature",
+                "location": "Kerala, India",
+                "description": "Serene backwaters with lush greenery"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.bMW9GaEICUj1-4XrJArQHgHaE7?w=247&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Thar Desert in Rajasthan",
+                "category": "nature",
+                "location": "Rajasthan, India",
+                "description": "Vast golden sands and camel caravans"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.kiIOjpW81FNARQrXzU6dzgHaFj?w=243&h=182&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Tea Gardens of Munnar",
+                "category": "nature",
+                "location": "Munnar, India",
+                "description": "Rolling hills covered in tea plantations"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.6TM8tJSWnj37aQV7qiaR2wHaE8?w=286&h=191&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Sunset at Rishikesh",
+                "category": "culture",
+                "location": "Rishikesh, India",
+                "description": "Peaceful sunset over the Ganges"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.Gj-r6SOANqXxbLS2ZodDVgHaKd?w=134&h=189&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Charminar in Hyderabad",
+                "category": "landmark",
+                "location": "Hyderabad, India",
+                "description": "Iconic monument of the city"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.dLvd6naOTsgFvk1TXvrzUgHaE4?w=197&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Colonial charm of Pondicherry",
+                "category": "architecture",
+                "location": "Pondicherry, India",
+                "description": "French colonial architecture and culture"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.Z97bkX40h0DN2g8WwHpqJwHaLO?w=186&h=281&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Eiffel Tower in Paris",
+                "category": "landmark",
+                "location": "Paris, France",
+                "description": "The iconic symbol of Paris"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.1986zwvTTvI1P4Q12dL72gHaE8?w=303&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Streets of Tokyo at night",
+                "category": "city",
+                "location": "Tokyo, Japan",
+                "description": "Neon-lit streets and modern cityscape"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.1Y_LVpL5N7wYZt_sE19HGgHaEo?w=306&h=190&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Santorini cliffs in Greece",
+                "category": "architecture",
+                "location": "Santorini, Greece",
+                "description": "White buildings on volcanic cliffs"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.YIgj1lwNFgqH1HLj7VbhtQHaLH?w=186&h=279&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Statue of Liberty in New York",
+                "category": "landmark",
+                "location": "New York, USA",
+                "description": "Symbol of freedom and democracy"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.Vk0uwiEUjM0EKU4u4pJxxAHaE8?w=258&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Sydney Opera House",
+                "category": "architecture",
+                "location": "Sydney, Australia",
+                "description": "Iconic performing arts center"
+            },
+            {
+                "src": "https://www.gibsons.co.uk/wp-content/uploads/2023/12/Dubai-400x500.jpg",
+                "caption": "Desert safari in Dubai",
+                "category": "nature",
+                "location": "Dubai, UAE",
+                "description": "Thrilling desert adventures"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.D4LlclIbgcaytUqVUt5AVAHaEn?w=261&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Northern Lights in Iceland",
+                "category": "nature",
+                "location": "Iceland",
+                "description": "Aurora borealis dancing in the sky"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.wIRKfP8CSNoGuIFh9FpfnAHaE8?w=256&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Great Wall of China",
+                "category": "landmark",
+                "location": "China",
+                "description": "Ancient wonder of the world"
+            },
+            {
+                "src": "https://th.bing.com/th/id/OIP.C-38BXgxMMOH09C9KYqUeQHaEo?w=245&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+                "caption": "Niagara Falls",
+                "category": "nature",
+                "location": "Canada/USA",
+                "description": "Powerful natural wonder"
+            },
+            {
+                "src": "https://www.andbeyond.com/wp-content/uploads/sites/5/Amazon-Rain-Forest.jpg",
+                "caption": "Amazon Rainforest",
+                "category": "nature",
+                "location": "Brazil",
+                "description": "Lush biodiversity and wildlife"
+            }
+        ];
+
+        // Global variables
+        let currentImageIndex = 0;
+        let filteredItems = galleryItems;
+
+        // Render gallery items
+        function renderGallery(items) {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = items.map((item, index) => `
+                <div class="gallery-item" data-category="${item.category}" data-index="${index}">
+                    <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                    <div class="gallery-caption">
+                        <h3>${item.caption}</h3>
+                        <p>${item.location}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.dataset.index);
+                    openLightbox(index);
+                });
+            });
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                filteredItems = filter === 'all' 
+                    ? galleryItems 
+                    : galleryItems.filter(item => item.category === filter);
+                
+                renderGallery(filteredItems);
+            });
+        });
+
+        // Lightbox functionality
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const item = filteredItems[index];
+            
+            document.getElementById('lightbox-img').src = item.src;
+            document.getElementById('lightbox-caption').innerHTML = `
+                <strong>${item.caption}</strong><br>
+                <span style="opacity: 0.8;">${item.location}</span><br>
+                <span style="font-size: 0.9em; opacity: 0.7;">${item.description}</span>
+            `;
+            document.getElementById('image-counter').textContent = `${index + 1} of ${filteredItems.length}`;
+            
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        // Navigation functions
+        function showPrevious() {
+            currentImageIndex = (currentImageIndex - 1 + filteredItems.length) % filteredItems.length;
+            openLightbox(currentImageIndex);
+        }
+
+        function showNext() {
+            currentImageIndex = (currentImageIndex + 1) % filteredItems.length;
+            openLightbox(currentImageIndex);
+        }
+
+        // Event listeners
+        document.getElementById('close-lightbox').addEventListener('click', () => {
+            document.getElementById('lightbox').style.display = 'none';
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', showPrevious);
+        document.getElementById('next-btn').addEventListener('click', showNext);
+
+        // Close lightbox on outside click
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('lightbox')) {
+                document.getElementById('lightbox').style.display = 'none';
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === 'Escape') {
+                    document.getElementById('lightbox').style.display = 'none';
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevious();
+                } else if (e.key === 'ArrowRight') {
+                    showNext();
+                }
+            }
+        });
+
+        // // View all gallery button
+        // document.getElementById('view-all-gallery').addEventListener('click', () => {
+        //     // Reset to show all items
+        //     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        //     document.querySelector('[data-filter="all"]').classList.add('active');
+        //     filteredItems = galleryItems;
+        //     renderGallery(filteredItems);
+        // });
+
+        // Initial render
+        renderGallery(galleryItems);
+        
+        // Add debugging
+        console.log('Gallery loaded with', galleryItems.length, 'items');
+    </script>
+    
+    <!-- Include authentication script -->
+    <script src="script.js"></script>
+</body>
+</html>

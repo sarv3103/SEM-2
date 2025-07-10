@@ -1,0 +1,123 @@
+Top 10 Travel Packages from India
+[
+  {
+    "name": "Goa Beach Getaway",
+    "days": 5,
+    "nights": 4,
+    "cities": ["Panaji", "Calangute", "Baga"],
+    "price_per_person": 18999,
+    "meals": "Included",
+    "hotels": ["Taj Vivanta", "Beach Bay Resort"],
+    "travel_modes": ["Flight", "Cab"],
+    "image": "https://media.istockphoto.com/id/157579910/photo/the-beach.jpg?s=612x612&w=0&k=20&c=aMk67AmzIVD_S1Nibww8ytUdyub2ck3HNQ3uTvuPWPI=",
+    "description": "5 days, 4 nights. Explore North & South Goa beaches, nightlife, and spice plantation tour."
+  },
+  {
+    "name": "Himachal Adventure Escape",
+    "days": 7,
+    "nights": 6,
+    "cities": ["Shimla", "Manali", "Solang Valley"],
+    "price_per_person": 21999,
+    "meals": "Included",
+    "hotels": ["Snow Valley Resort", "Apple Country Resort"],
+    "travel_modes": ["Train", "Bus", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTeyWGGWqyUwuDE4tw2HBRyoH7aBldHGk8JQ&s",
+    "description": "7 days, 6 nights. Enjoy snow activities, scenic valleys, and local sightseeing."
+  },
+  {
+    "name": "Kerala Backwaters Retreat",
+    "days": 6,
+    "nights": 5,
+    "cities": ["Kochi", "Munnar", "Alleppey"],
+    "price_per_person": 20499,
+    "meals": "Included",
+    "hotels": ["Spice Jungle Resort", "Houseboat Stay"],
+    "travel_modes": ["Flight", "Cab", "Boat"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHrnyvcXzeXzyAeGYn9eWncSPM7G_st8yfRg&s",
+    "description": "6 days, 5 nights. Tea gardens, wildlife safari, houseboat cruise through backwaters."
+  },
+  {
+    "name": "Golden Triangle Tour",
+    "days": 6,
+    "nights": 5,
+    "cities": ["Delhi", "Agra", "Jaipur"],
+    "price_per_person": 17999,
+    "meals": "Included",
+    "hotels": ["Radisson Blu", "Hotel Clarks Shiraz"],
+    "travel_modes": ["Train", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSn00QIIVRkAOhOBvypNAdU4ggEx930HARjA&s",
+    "description": "6 days, 5 nights. Visit Taj Mahal, Jaipur forts, and heritage sites."
+  },
+  {
+    "name": "Kashmir Paradise Package",
+    "days": 5,
+    "nights": 4,
+    "cities": ["Srinagar", "Gulmarg", "Pahalgam"],
+    "price_per_person": 22999,
+    "meals": "Included",
+    "hotels": ["Heevan Resort", "Khyber Himalayan Resort"],
+    "travel_modes": ["Flight", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVdZK6HqqNWTBv_-K7dYvOGmVFeGvt2WYfOQ&s",
+    "description": "5 days, 4 nights. Enjoy snow, gardens, Dal Lake shikara ride and sightseeing."
+  },
+  {
+    "name": "Andaman Island Escape",
+    "days": 6,
+    "nights": 5,
+    "cities": ["Port Blair", "Havelock Island", "Neil Island"],
+    "price_per_person": 25499,
+    "meals": "Included",
+    "hotels": ["Coral Reef Resort", "Symphony Palms Beach"],
+    "travel_modes": ["Flight", "Boat"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQauB4DKO11HXk5wxJbeZ3w3jFh-fdZnZuKew&s",
+    "description": "6 days, 5 nights. Crystal-clear waters, scuba diving and beach vibes."
+  },
+  {
+    "name": "Rajasthan Royal Trail",
+    "days": 7,
+    "nights": 6,
+    "cities": ["Udaipur", "Jodhpur", "Jaisalmer"],
+    "price_per_person": 20999,
+    "meals": "Included",
+    "hotels": ["Taj Lake Palace", "Desert Camp"],
+    "travel_modes": ["Train", "Cab"],
+    "image": "https://www.tripplannersindia.com/assets/images/page/6_Nights_7_Days_Royal_Rajasthan_Tour_Package.jpg",
+    "description": "7 days, 6 nights. Forts, palaces, desert safari, and culture of Rajasthan."
+  },
+  {
+    "name": "Meghalaya & Assam Wonders",
+    "days": 6,
+    "nights": 5,
+    "cities": ["Shillong", "Cherrapunji", "Kaziranga"],
+    "price_per_person": 21999,
+    "meals": "Included",
+    "hotels": ["Ri Kynjai Resort", "IORA Retreat"],
+    "travel_modes": ["Flight", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLEq4-MVGvGWmWOjDLyv9SRhRWB053Sus62w&s",
+    "description": "6 days, 5 nights. Waterfalls, caves, root bridges and rhino safari."
+  },
+  {
+    "name": "Sikkim Scenic Escape",
+    "days": 5,
+    "nights": 4,
+    "cities": ["Gangtok", "Tsomgo Lake", "Nathula Pass"],
+    "price_per_person": 19999,
+    "meals": "Included",
+    "hotels": ["Lemon Tree Hotel", "The Royal Plaza"],
+    "travel_modes": ["Flight", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMajMFaMMYBcDLdlL2_xoDqn6E4otZp1p8uA&s",
+    "description": "5 days, 4 nights. Mountain views, monasteries, and Indo-China border."
+  },
+  {
+    "name": "Trekking in Ladakh",
+    "days": 8,
+    "nights": 7,
+    "cities": ["Leh", "Nubra Valley", "Pangong Lake"],
+    "price_per_person": 29999,
+    "meals": "Included",
+    "hotels": ["Hotel Ladakh Residency", "Campsite at Pangong"],
+    "travel_modes": ["Flight", "Cab"],
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbcQYDs10I2Yahp0YNzuIw8iyolWhpEvrFeQ&s",
+    "description": "8 days, 7 nights. High-altitude desert adventure, monasteries, and lake stays."
+  }
+]
